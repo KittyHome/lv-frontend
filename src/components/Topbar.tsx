@@ -19,10 +19,10 @@ const Topbar = () => {
   }, [navigate]);
 
   return (
-    <div className="h-[80px] flex items-center justify-between px-10 z-10 relative">
+    <div className="h-[70px] flex items-center justify-between px-10 z-10 relative">
       <img
         src={Logo}
-        className="h-12 cursor-pointer"
+        className="h-10 cursor-pointer"
         alt="Lucky House Logo"
         onClick={() => navigate("/")}
       />

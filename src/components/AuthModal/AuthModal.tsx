@@ -10,7 +10,7 @@ const AuthModal = () => {
 
   return (
     <Modal isOpen={isOpenAuthModal} onClose={closeAuthModal}>
-      <div className="p-5 py-10 rounded shadow-lg sm:w-[500px] w-[300px] border-background-100 border bg-background-100">
+      <div className="p-5 py-10 rounded shadow-lg sm:w-[500px] w-[300px] border-secondary-100 border bg-background-100">
         <div className="w-full flex justify-center">
           <img src={Logo} alt="Lucky Village Logo" />
         </div>

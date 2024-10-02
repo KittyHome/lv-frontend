@@ -6,6 +6,9 @@ import { TbThumbUpFilled, TbThumbDownFilled } from "react-icons/tb";
 interface VoteButtonProps {
   direction?: "up" | "down";
   textPosition?: "right" | "left";
+  showText?: boolean;
+  active?: boolean;
+  onClick: () => void;
 }
 
 const textVariants = {
@@ -21,12 +24,20 @@ const buttonVariants = {
 const VoteButton: React.FC<VoteButtonProps> = ({
   direction = "up",
   textPosition = "right",
+  showText = false,
+  active = false,
+  onClick,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const color = useMemo(
-    () => (direction === "up" ? "text-green-500" : "text-red-500"),
-    [direction]
+    () =>
+      active
+        ? direction === "up"
+          ? "text-green-500"
+          : "text-red-500"
+        : "text-gray-700",
+    [active, direction]
   );
   const text = direction === "up" ? "Up" : "Down";
 
@@ -44,7 +55,7 @@ const VoteButton: React.FC<VoteButtonProps> = ({
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
     >
-      {textPosition === "left" && (
+      {showText && textPosition === "left" && (
         <motion.span
           className={clsx(color, "opacity-0")}
           variants={adjustedTextVariants}
@@ -60,10 +71,11 @@ const VoteButton: React.FC<VoteButtonProps> = ({
         variants={buttonVariants}
         initial="initial"
         whileHover="hover"
+        onClick={onClick}
       >
         {direction === "up" ? <TbThumbUpFilled /> : <TbThumbDownFilled />}
       </motion.button>
-      {textPosition === "right" && (
+      {showText && textPosition === "right" && (
         <motion.span
           className={clsx(color, "opacity-0")}
           variants={adjustedTextVariants}

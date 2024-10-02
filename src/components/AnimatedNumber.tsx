@@ -22,7 +22,7 @@ const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
   const [currentValue, setCurrentValue] = useState(0);
 
   useEffect(() => {
-    let interval: number;
+    let interval: NodeJS.Timeout;
     if (isInView) {
       interval = setInterval(() => {
         setCurrentValue((prev) => {

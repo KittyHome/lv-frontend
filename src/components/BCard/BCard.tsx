@@ -1,13 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import VoteButton from "./VoteButton";
 import BarChart from "./BarChart";
-
-interface BCardProps {
-  imgSrc: string;
-  title: string;
-  description: string;
-}
+import NumberPad from "./NumberPad";
 
 const generateRandomData = () => {
   return Array.from({ length: 48 }, (_, index) => {
@@ -32,11 +27,18 @@ const generateRandomData = () => {
   });
 };
 
+interface BCardProps {
+  imgSrc: string;
+  title: string;
+  description: string;
+}
+
 const BCard: React.FC<BCardProps> = ({ imgSrc, title, description }) => {
   const chartData = useMemo(() => generateRandomData(), []);
   const divRef = useRef<HTMLDivElement>(null);
   const [divHeight, setDivHeight] = useState(300);
   const [isBelowXL, setIsBelowXL] = useState(false);
+  const [isUp, setIsUp] = useState(true);
 
   useEffect(() => {
     const div = divRef.current;
@@ -68,6 +70,13 @@ const BCard: React.FC<BCardProps> = ({ imgSrc, title, description }) => {
     [divHeight, isBelowXL]
   );
 
+  const changeMode = useCallback(
+    (mode: boolean) => () => {
+      setIsUp(mode);
+    },
+    []
+  );
+
   return (
     <div className="bg-secondary-100/80 p-2 rounded flex md:flex-row xl:flex-col gap-2 overflow-clip h-full w-full justify-center items-center border border-background-100 shadow-lg">
       <div ref={divRef} className="flex flex-col gap-2 w-full h-[fit-content]">
@@ -84,9 +93,15 @@ const BCard: React.FC<BCardProps> = ({ imgSrc, title, description }) => {
             7283627
           </div>
         </div>
-        <div className="p-2 bg-background-200 flex justify-between items-center rounded">
-          <VoteButton />
-          <VoteButton direction="down" textPosition="left" />
+        <div className="p-2 flex justify-between items-center rounded">
+          <VoteButton active={isUp} onClick={changeMode(true)} />
+          <NumberPad isUp={isUp} name={title} />
+          <VoteButton
+            active={!isUp}
+            direction="down"
+            textPosition="right"
+            onClick={changeMode(false)}
+          />
         </div>
         <div className="p-2 bg-background-200 flex justify-between items-center rounded">
           <BarChart data={chartData} />

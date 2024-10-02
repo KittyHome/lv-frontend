@@ -12,15 +12,12 @@ const DefaultLayout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <div>
       <Banner content="Don't miss out! Buy your tickets now and join the excitement!" />
-      <div className="py-[60px]">
-        <Topbar />
-        <div className="z-0">{children}</div>
-        <Tooltip id="animated-number-tooltip" className="z-50" />
-      </div>
+      <Topbar />
+      <div className="z-0">{children}</div>
+      <Tooltip id="animated-number-tooltip" className="z-50" />
       <FloatingTicketButton />
       <FloatingClock />
       <AuthModal />
-
       <Footer />
     </div>
   );

@@ -1,35 +1,24 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 
-import Animal1 from "/videos/video1.mp4";
-import Animal2 from "/videos/video2.mp4";
-import Animal3 from "/videos/video3.mp4";
-import Animal4 from "/videos/video4.mp4";
-import Animal5 from "/videos/video5.mp4";
 import BCard from "../components/BCard/BCard";
 import Gradient from "../lib/Gradient/Gradient";
 import AnimatedNumber from "../components/AnimatedNumber";
 import BResult from "../components/BResult/BResult";
 import TrendGraph from "../components/TrendGraph/TrendGraph";
+import { ANIMALS } from "../lib/constants";
 
 const generateSampleData = () => {
-  const names = [
-    "Whiskerwisp",
-    "Flickerdoodle",
-    "MystiPurr",
-    "DandyPounce",
-    "Puzzlebounce",
-  ];
-  const series = [];
-  for (let i = 0; i < 5; i++) {
+  const series: any[] = [];
+  ANIMALS.forEach((animal) => {
     const data = [];
     for (let hour = 0; hour < 24; hour++) {
       const time = `${String(hour).padStart(2, "0")}:00`;
       const value = Math.floor(Math.random() * 100);
       data.push({ primary: time, secondary: value });
     }
-    series.push({ label: names[i], data });
-  }
+    series.push({ label: animal.name, data });
+  });
   return series;
 };
 
@@ -60,41 +49,15 @@ const CardBox = () => {
       initial="hidden"
       animate="show"
     >
-      <motion.div variants={itemVariants}>
-        <BCard
-          imgSrc={Animal1}
-          title="Whiskerwisp"
-          description="A soft, pastel-colored cat with swirling patterns of blue, pink, and lavender. Whiskerwisp's fur seems to shift slightly like mist, and their movements are almost too quiet to notice."
-        />
-      </motion.div>
-      <motion.div variants={itemVariants}>
-        <BCard
-          imgSrc={Animal2}
-          title="Flickerdoodle"
-          description="A vibrant, orange-and-yellow striped cat with a coat that seems to flicker like a candle flame. They're always moving, darting around like a streak of sunlight."
-        />
-      </motion.div>
-      <motion.div variants={itemVariants}>
-        <BCard
-          imgSrc={Animal3}
-          title="MystiPurr"
-          description="A rich, deep purple cat with flecks of silver and green like a midnight sky filled with shooting stars. Their eyes glow a soft, mysterious blue."
-        />
-      </motion.div>
-      <motion.div variants={itemVariants}>
-        <BCard
-          imgSrc={Animal4}
-          title="DandyPounce"
-          description="A small, round, and fluffy cat with bright bursts of color—reds, yellows, and greens—like a bouquet of flowers. Their energy is boundless, and they seem to hop more than walk."
-        />
-      </motion.div>
-      <motion.div variants={itemVariants}>
-        <BCard
-          imgSrc={Animal5}
-          title="Puzzlebounce"
-          description="A patchwork of colors—green, orange, blue, and pink—with each patch seemingly sewn together like a quilt. Puzzlebounce has mismatched eyes and an air of curiosity about everything."
-        />
-      </motion.div>
+      {ANIMALS.map((animal) => (
+        <motion.div key={animal.name} variants={itemVariants}>
+          <BCard
+            imgSrc={animal.avatar}
+            title={animal.name}
+            description={animal.description}
+          />
+        </motion.div>
+      ))}
     </motion.div>
   );
 };
@@ -106,7 +69,7 @@ const Dashboard = () => {
     if (canvasRef.current) {
       const gradient = new Gradient({
         canvas: canvasRef.current,
-        colors: ["#370061", "#090B12", "#161A25", "#090B12"],
+        colors: ["#171625", "#090B12", "#161A25", "#090B12"],
         amplitude: 320,
         density: [0.01, 0.16],
         angle: 0,

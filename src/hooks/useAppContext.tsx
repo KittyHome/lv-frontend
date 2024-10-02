@@ -1,4 +1,14 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useCallback,
+} from "react";
+import { toast } from "react-toastify";
+
+import { ButtonStatus } from "../lib/types";
+import { PAD_BUTTONS } from "../lib/constants";
 
 interface AppContextProps {
   isAuthenticated: boolean;
@@ -6,6 +16,8 @@ interface AppContextProps {
   isOpenAuthModal: boolean;
   openAuthModal: () => void;
   closeAuthModal: () => void;
+  padStates: ButtonStatus[];
+  updateDisabledDate: (name: string, isUp: boolean, id: string) => void;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -19,6 +31,30 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
   const openAuthModal = () => setIsOpenAuthModal(true);
   const closeAuthModal = () => setIsOpenAuthModal(false);
 
+  const [padStates, setPadStates] = useState<ButtonStatus[]>(PAD_BUTTONS);
+
+  const updateDisabledDate = useCallback(
+    (name: string, isUp: boolean, id: string) => {
+      setPadStates((prevStates) => {
+        const updatedState = prevStates.find((state) => state.id === id);
+        const value = updatedState ? updatedState.value : "";
+        const action = isUp ? "upvoted" : "downvoted";
+        toast(`You ${action} **${name}** with a value of ${value}!`, {
+          type: "success",
+        });
+        return prevStates.map((state) =>
+          state.id === id
+            ? {
+                ...state,
+                disabledDate: new Date(Date.now() + state.timeInterval * 1000),
+              }
+            : state
+        );
+      });
+    },
+    []
+  );
+
   return (
     <AppContext.Provider
       value={{
@@ -27,6 +63,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
         isOpenAuthModal,
         openAuthModal,
         closeAuthModal,
+        padStates,
+        updateDisabledDate,
       }}
     >
       {children}

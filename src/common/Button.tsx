@@ -15,7 +15,7 @@ const Button: React.FC<ButtonProps> = ({
   children,
   onClick,
 }) => {
-  const defaultClasses = "p-4 py-3 rounded";
+  const defaultClasses = "p-3 py-2 rounded";
   const variantClasses =
     variant === "primary"
       ? "bg-primary-gradient hover:shadow-glow-primary"
