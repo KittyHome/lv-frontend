@@ -51,7 +51,7 @@ export default class Gradient {
   material: Material | null = null;
   geometry: PlaneGeometry | null = null;
 
-  scrollingTimeout: number | undefined = undefined;
+  scrollingTimeout: NodeJS.Timeout | undefined = undefined;
   scrollingRefreshDelay = 200;
   width: number | null = null;
   height = 600;
