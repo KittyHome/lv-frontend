@@ -6,7 +6,7 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 
-export async function signInWithEmail(email: string, password: string) {
+export async function authenticateWithEmail(email: string, password: string) {
   try {
     const userCredential = await signInWithEmailAndPassword(
       auth,
@@ -15,8 +15,23 @@ export async function signInWithEmail(email: string, password: string) {
     );
     return userCredential.user;
   } catch (error) {
-    console.error("Error signing in with email and password", error);
-    throw error;
+    const errorCode = (error as { code: string }).code;
+    if (errorCode === "auth/user-not-found") {
+      try {
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        return userCredential.user;
+      } catch (signUpError) {
+        console.error("Error signing up with email and password", signUpError);
+        throw signUpError;
+      }
+    } else {
+      console.error("Error signing in with email and password", error);
+      throw error;
+    }
   }
 }
 

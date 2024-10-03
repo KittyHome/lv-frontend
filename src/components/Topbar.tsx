@@ -6,6 +6,7 @@ import { useAppContext } from "../hooks/useAppContext";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { signOut } from "../lib/firebase/auth";
 
 const Topbar = () => {
   const navigate = useNavigate();
@@ -33,9 +34,14 @@ const Topbar = () => {
           Contact Us
         </motion.button>
         {user ? (
-          <Button onClick={handleAccount} className="font-bold">
-            Account
-          </Button>
+          <>
+            <Button onClick={handleAccount} className="font-bold">
+              Account
+            </Button>
+            <Button onClick={signOut} variant="secondary" className="font-bold">
+              Sign Out
+            </Button>
+          </>
         ) : (
           <Button onClick={handleAuthButton} className="font-bold">
             Get Started

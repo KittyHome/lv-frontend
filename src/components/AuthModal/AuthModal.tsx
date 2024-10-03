@@ -6,7 +6,10 @@ import Button from "../../common/Button";
 import Input from "../../common/Input";
 import Modal from "../../common/Modal/Modal";
 import { useAppContext } from "../../hooks/useAppContext";
-import { signInWithEmail, signInWithGoogle } from "../../lib/firebase/auth";
+import {
+  authenticateWithEmail,
+  signInWithGoogle,
+} from "../../lib/firebase/auth";
 
 const AuthModal = () => {
   const { isOpenAuthModal, closeAuthModal } = useAppContext();
@@ -16,7 +19,7 @@ const AuthModal = () => {
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const user = await signInWithEmail(email, password);
+      const user = await authenticateWithEmail(email, password);
       console.log("Signed in user:", user);
       closeAuthModal();
     } catch (error) {
