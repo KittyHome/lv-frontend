@@ -8,6 +8,7 @@ import { AppProvider } from "./hooks/useAppContext.tsx";
 import "./index.css";
 import "react-circular-progressbar/dist/styles.css";
 import "react-toastify/dist/ReactToastify.css";
+import { AuthProvider } from "./hooks/useAuth.tsx";
 
 const error = console.error;
 console.error = (...args: any) => {
@@ -21,11 +22,13 @@ createRoot(document.getElementById("root")!).render(
       data-theme="dark"
       className="bg-background-100 text-text-100 min-h-screen"
     >
-      <AppProvider>
-        <Router>
-          <App />
-        </Router>
-      </AppProvider>
+      <AuthProvider>
+        <AppProvider>
+          <Router>
+            <App />
+          </Router>
+        </AppProvider>
+      </AuthProvider>
       <ToastContainer
         position="top-center"
         autoClose={5000}

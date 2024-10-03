@@ -11,8 +11,6 @@ import { ButtonStatus } from "../lib/types";
 import { PAD_BUTTONS } from "../lib/constants";
 
 interface AppContextProps {
-  isAuthenticated: boolean;
-  setIsAuthenticated: (value: boolean) => void;
   isOpenAuthModal: boolean;
   openAuthModal: () => void;
   closeAuthModal: () => void;
@@ -25,7 +23,6 @@ const AppContext = createContext<AppContextProps | undefined>(undefined);
 export const AppProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isOpenAuthModal, setIsOpenAuthModal] = useState(false);
 
   const openAuthModal = () => setIsOpenAuthModal(true);
@@ -58,8 +55,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
   return (
     <AppContext.Provider
       value={{
-        isAuthenticated,
-        setIsAuthenticated,
         isOpenAuthModal,
         openAuthModal,
         closeAuthModal,

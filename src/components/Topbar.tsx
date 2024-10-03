@@ -5,10 +5,12 @@ import Logo from "/logo.png";
 import { useAppContext } from "../hooks/useAppContext";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const Topbar = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, openAuthModal } = useAppContext();
+  const { openAuthModal } = useAppContext();
+  const { user } = useAuth();
 
   const handleAuthButton = useCallback(() => {
     openAuthModal();
@@ -30,7 +32,7 @@ const Topbar = () => {
         <motion.button whileHover={{ scale: 1.05 }} className="font-bold">
           Contact Us
         </motion.button>
-        {isAuthenticated ? (
+        {user ? (
           <Button onClick={handleAccount} className="font-bold">
             Account
           </Button>

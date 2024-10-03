@@ -2,11 +2,10 @@ import React, { ReactNode } from "react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
 
-interface ButtonProps {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary";
   className?: string;
   children: ReactNode;
-  onClick?: () => void;
 }
 
 const Button: React.FC<ButtonProps> = ({

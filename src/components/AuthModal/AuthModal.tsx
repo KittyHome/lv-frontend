@@ -1,12 +1,38 @@
+import React, { useState } from "react";
+
 import Logo from "/logo.png";
 import GoogleLogo from "/images/google-icon-logo.svg";
 import Button from "../../common/Button";
 import Input from "../../common/Input";
 import Modal from "../../common/Modal/Modal";
 import { useAppContext } from "../../hooks/useAppContext";
+import { signInWithEmail, signInWithGoogle } from "../../lib/firebase/auth";
 
 const AuthModal = () => {
   const { isOpenAuthModal, closeAuthModal } = useAppContext();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleEmailSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const user = await signInWithEmail(email, password);
+      console.log("Signed in user:", user);
+      closeAuthModal();
+    } catch (error) {
+      console.error("Error signing in with email:", error);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const user = await signInWithGoogle();
+      console.log("Signed in user with Google:", user);
+      closeAuthModal();
+    } catch (error) {
+      console.error("Error signing in with Google:", error);
+    }
+  };
 
   return (
     <Modal isOpen={isOpenAuthModal} onClose={closeAuthModal}>
@@ -18,9 +44,7 @@ const AuthModal = () => {
           <Button
             variant="secondary"
             className="w-full flex items-center justify-center gap-3"
-            onClick={() => {
-              console.log("Google login clicked");
-            }}
+            onClick={handleGoogleSignIn}
           >
             <img src={GoogleLogo} alt="Google Logo" className="w-6 h-6" />
             Continue with Google
@@ -32,12 +56,15 @@ const AuthModal = () => {
             Continue directly with
           </span>
         </div>
-        <form>
+        <form onSubmit={handleEmailSignIn}>
           <div className="mb-4">
             <Input
               type="text"
               className="w-full"
               placeholder="Enter your email here"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
           <div className="mb-4">
@@ -45,10 +72,15 @@ const AuthModal = () => {
               type="password"
               className="w-full"
               placeholder="Enter your password here"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
+          <Button type="submit" className="w-full">
+            Continue
+          </Button>
         </form>
-        <Button className="w-full">Continue</Button>
       </div>
     </Modal>
   );

@@ -69,7 +69,7 @@ const Dashboard = () => {
     if (canvasRef.current) {
       const gradient = new Gradient({
         canvas: canvasRef.current,
-        colors: ["#171625", "#090B12", "#161A25", "#090B12"],
+        colors: ["#161A25", "#090B12", "#161A25", "#090B12"],
         amplitude: 320,
         density: [0.01, 0.16],
         angle: 0,
