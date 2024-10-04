@@ -33,7 +33,9 @@ if (mode === "development") {
   }
   if (import.meta.env.VITE_FIREBASE_FIRESTORE_EMULATOR_URL) {
     const [host, port] =
-      import.meta.env.VITE_FIREBASE_FIRESTORE_EMULATOR_URL.split(":");
+      import.meta.env.VITE_FIREBASE_FIRESTORE_EMULATOR_URL.split(/[:/]+/).slice(
+        1
+      );
     connectFirestoreEmulator(firestore, host, parseInt(port, 10));
   }
   if (import.meta.env.VITE_FIREBASE_FUNCTIONS_EMULATOR_URL) {

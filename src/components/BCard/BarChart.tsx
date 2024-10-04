@@ -54,7 +54,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
   }, [globalMaxSecondaryValue]);
 
   return (
-    <div style={{ width: "100%", height: "100px" }}>
+    <div style={{ width: "100%", height: "55px" }}>
       <Chart
         options={{
           data,

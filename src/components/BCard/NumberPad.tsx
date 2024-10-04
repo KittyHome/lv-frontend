@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { useCallback, useEffect, useState } from "react";
 
 import { useAppContext } from "../../hooks/useAppContext";
+import { AnimalId } from "../../lib/types";
 
 interface NumberPadButtonProps {
   text: string;
@@ -19,9 +20,7 @@ const NumberPadButton: React.FC<NumberPadButtonProps> = ({
   const [progress, setProgress] = useState<number | null>(null);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-
-    interval = setInterval(() => {
+    const interval = setInterval(() => {
       if (disabledDate && disabledDate.getTime() > new Date().getTime()) {
         const newProgress =
           1 -
@@ -29,17 +28,13 @@ const NumberPadButton: React.FC<NumberPadButtonProps> = ({
 
         setProgress(newProgress > 0 ? newProgress : null);
       } else {
-        if (interval) {
-          clearInterval(interval);
-        }
+        interval && clearInterval(interval);
         setProgress(null);
       }
-    }, 1000);
+    }, 500);
 
     return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
+      interval && clearInterval(interval);
     };
   }, [disabledDate, timeInterval]);
 
@@ -82,7 +77,7 @@ const NumberPadButton: React.FC<NumberPadButtonProps> = ({
 };
 
 interface NumberPadProps {
-  name: string;
+  name: AnimalId;
   isUp: boolean;
 }
 

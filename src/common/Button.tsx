@@ -1,6 +1,6 @@
-import React, { ReactNode } from "react";
-import { motion } from "framer-motion";
 import clsx from "clsx";
+import { motion } from "framer-motion";
+import React, { ReactNode } from "react";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary";

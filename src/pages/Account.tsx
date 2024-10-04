@@ -3,8 +3,11 @@ import { HiWallet, HiUserCircle } from "react-icons/hi2";
 
 import Button from "../common/Button";
 import Input from "../common/Input";
+import { useAuth } from "../hooks/useAuth";
 
 const Account = () => {
+  const { user } = useAuth();
+
   return (
     <div className="bg-background-200 p-5">
       <div className="mx-auto container">
@@ -18,15 +21,24 @@ const Account = () => {
               </h3>
               <div className="flex flex-col gap-2">
                 <label className="ml-2">Username</label>
-                <Input placeholder="Enter your username here" />
+                <Input
+                  placeholder="Enter your username here"
+                  value={user?.username}
+                  readOnly
+                />
               </div>
               <div className="flex flex-col gap-2">
                 <label className="ml-2">Email</label>
-                <Input placeholder="Enter your email here" />
+                <Input
+                  placeholder="Enter your email here"
+                  readOnly
+                  value={user?.email || ""}
+                  disabled
+                />
               </div>
               <div className="flex flex-col gap-2">
                 <label className="ml-2">Password</label>
-                <Input placeholder="Enter your password here" />
+                <Input placeholder="Enter your password here" disabled />
               </div>
               <Button>Save</Button>
             </div>

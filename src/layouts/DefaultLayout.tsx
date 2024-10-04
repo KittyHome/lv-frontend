@@ -16,7 +16,13 @@ const DefaultLayout: React.FC = () => {
       <div className="z-0">
         <Outlet />
       </div>
-      <Tooltip id="animated-number-tooltip" className="z-50" />
+      <Tooltip
+        id="animated-number-tooltip"
+        className="z-50 max-w-[250px]"
+        style={{
+          backgroundColor: "var(--color-background-200)",
+        }}
+      />
       <FloatingTicketButton />
       <FloatingClock />
       <AuthModal />

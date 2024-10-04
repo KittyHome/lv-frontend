@@ -1,11 +1,19 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { HiTicket } from "react-icons/hi2";
 import { Tooltip } from "react-tooltip";
 
+import TicketModal from "./TicketModal/TicketModal";
+
 const FloatingTicketButton: React.FC = () => {
-  const handleClick = () => {
-    alert("Redirecting to ticket purchase page...");
-  };
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const closeModal = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
+  const handleClick = useCallback(() => {
+    setIsOpen(true);
+  }, []);
 
   return (
     <>
@@ -17,7 +25,14 @@ const FloatingTicketButton: React.FC = () => {
       >
         <HiTicket />
       </button>
-      <Tooltip id="floating-ticket-button-tooltip" className="z-50" />
+      <Tooltip
+        id="floating-ticket-button-tooltip"
+        className="z-50"
+        style={{
+          backgroundColor: "var(--color-background-200)",
+        }}
+      />
+      <TicketModal isOpen={isOpen} closeModal={closeModal} />
     </>
   );
 };

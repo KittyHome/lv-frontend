@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
 import clsx from "clsx";
+import { motion, useInView } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 interface AnimatedNumberProps {
   target: number;

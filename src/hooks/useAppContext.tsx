@@ -4,18 +4,24 @@ import React, {
   useState,
   ReactNode,
   useCallback,
+  useEffect,
 } from "react";
 import { toast } from "react-toastify";
 
-import { ButtonStatus } from "../lib/types";
+import { AnimalId, ButtonStatus } from "../lib/types";
 import { PAD_BUTTONS } from "../lib/constants";
+import { useAuth } from "./useAuth";
+import { collection, getFirestore, onSnapshot } from "firebase/firestore";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 interface AppContextProps {
   isOpenAuthModal: boolean;
   openAuthModal: () => void;
   closeAuthModal: () => void;
   padStates: ButtonStatus[];
-  updateDisabledDate: (name: string, isUp: boolean, id: string) => void;
+  updateDisabledDate: (name: AnimalId, isUp: boolean, id: string) => void;
+  setPadStates: (padStates: ButtonStatus[]) => void;
+  votes: Record<AnimalId, number>;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -23,43 +29,93 @@ const AppContext = createContext<AppContextProps | undefined>(undefined);
 export const AppProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+  const { user } = useAuth();
   const [isOpenAuthModal, setIsOpenAuthModal] = useState(false);
 
-  const openAuthModal = () => setIsOpenAuthModal(true);
-  const closeAuthModal = () => setIsOpenAuthModal(false);
+  const openAuthModal = useCallback(() => setIsOpenAuthModal(true), []);
+  const closeAuthModal = useCallback(() => setIsOpenAuthModal(false), []);
 
   const [padStates, setPadStates] = useState<ButtonStatus[]>(PAD_BUTTONS);
+  const [votes, setVotes] = useState<Record<AnimalId, number>>({
+    DandyPounce: 0,
+    Flickerdoodle: 0,
+    MystiPurr: 0,
+    Puzzlebounce: 0,
+    Whiskerwisp: 0,
+  });
 
   const updateDisabledDate = useCallback(
-    (name: string, isUp: boolean, id: string) => {
-      setPadStates((prevStates) => {
-        const updatedState = prevStates.find((state) => state.id === id);
-        const value = updatedState ? updatedState.value : "";
+    (name: AnimalId, isUp: boolean, id: string) => {
+      if (user) {
+        const updatedState = padStates.find((state) => state.id === id);
+        const value = updatedState ? updatedState.value : 0;
         const action = isUp ? "upvoted" : "downvoted";
-        toast(`You ${action} **${name}** with a value of ${value}!`, {
-          type: "success",
+
+        if (!user.money || user.money < value * 0.1) {
+          toast.error("You have insufficient funds!");
+          return;
+        }
+
+        const functions = getFunctions();
+        const processVote = httpsCallable(functions, "processVote");
+        processVote({
+          animalId: name,
+          padId: id,
+          isUp,
+        })
+          .then(() => {
+            toast(`You ${action} **${name}** with a value of ${value}!`, {
+              type: "success",
+            });
+            console.log("Vote processed successfully:");
+          })
+          .catch((error: unknown) => {
+            console.error("Error processing vote:", error);
+            toast("Failed to process vote. Please try again.", {
+              type: "error",
+            });
+          });
+      } else {
+        openAuthModal();
+        toast("Please log in to vote.", {
+          type: "info",
         });
-        return prevStates.map((state) =>
-          state.id === id
-            ? {
-                ...state,
-                disabledDate: new Date(Date.now() + state.timeInterval * 1000),
-              }
-            : state
-        );
-      });
+      }
     },
-    []
+    [padStates]
   );
+
+  useEffect(() => {
+    user?.padStates && setPadStates(user.padStates);
+  }, [user?.padStates]);
+
+  useEffect(() => {
+    const firestore = getFirestore();
+    const unsubscribe = onSnapshot(
+      collection(firestore, "animals"),
+      (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          setVotes((prvVotes) => ({
+            ...prvVotes,
+            [change.doc.id as AnimalId]: change.doc.data().vote,
+          }));
+        });
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <AppContext.Provider
       value={{
+        votes,
         isOpenAuthModal,
         openAuthModal,
         closeAuthModal,
         padStates,
         updateDisabledDate,
+        setPadStates,
       }}
     >
       {children}

@@ -1,25 +1,12 @@
 import { motion } from "framer-motion";
 
-import BCard from "../components/BCard/BCard";
 import AnimatedNumber from "../components/AnimatedNumber";
+import BCard from "../components/BCard/BCard";
 import BResult from "../components/BResult/BResult";
-import TrendGraph from "../components/TrendGraph/TrendGraph";
-import { ANIMALS } from "../lib/constants";
 import GradientBackground from "../components/GradientBackground";
-
-const generateSampleData = () => {
-  const series: any[] = [];
-  ANIMALS.forEach((animal) => {
-    const data = [];
-    for (let hour = 0; hour < 24; hour++) {
-      const time = `${String(hour).padStart(2, "0")}:00`;
-      const value = Math.floor(Math.random() * 100);
-      data.push({ primary: time, secondary: value });
-    }
-    series.push({ label: animal.name, data });
-  });
-  return series;
-};
+import Trend from "../components/Trend";
+import { useAppContext } from "../hooks/useAppContext";
+import { ANIMALS } from "../lib/constants";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -41,9 +28,11 @@ const itemVariants = {
 };
 
 const CardBox = () => {
+  const { votes } = useAppContext();
+
   return (
     <motion.div
-      className="grid gap-5 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-5 w-full justify-items-center"
+      className="grid gap-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 w-full justify-items-center"
       variants={containerVariants}
       initial="hidden"
       animate="show"
@@ -54,6 +43,7 @@ const CardBox = () => {
             imgSrc={animal.avatar}
             title={animal.name}
             description={animal.description}
+            vote={votes[animal.name]}
           />
         </motion.div>
       ))}
@@ -70,7 +60,7 @@ const Dashboard = () => {
           <div className="flex flex-col items-center">
             <h2 className="text-2xl font-bold">Prize Pool</h2>
             <AnimatedNumber
-              target={99999999}
+              target={0}
               tooltip="This is the current prize pool! Buy a ticket now for your chance to win big!"
               symbol="$"
               size="lg"
@@ -78,9 +68,7 @@ const Dashboard = () => {
             />
           </div>
           <CardBox />
-          <div className="rounded overflow-clip bg-background-200 shadow border border-background-100">
-            <TrendGraph data={generateSampleData()} />
-          </div>
+          <Trend />
           <BResult />
         </div>
       </div>

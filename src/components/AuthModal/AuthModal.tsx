@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { BeatLoader } from "react-spinners";
 
 import Logo from "/logo.png";
 import GoogleLogo from "/images/google-icon-logo.svg";
@@ -15,25 +16,54 @@ const AuthModal = () => {
   const { isOpenAuthModal, closeAuthModal } = useAppContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  const validateForm = () => {
+    let isValid = true;
+
+    setEmailError("");
+    setPasswordError("");
+
+    if (!email) {
+      setEmailError("Email is required");
+      isValid = false;
+    }
+    if (password.length < 6) {
+      setPasswordError("Password must be longer than 6 characters");
+      isValid = false;
+    }
+
+    return isValid;
+  };
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
+
+    setIsLoading(true);
     try {
-      const user = await authenticateWithEmail(email, password);
-      console.log("Signed in user:", user);
+      await authenticateWithEmail(email, password);
       closeAuthModal();
     } catch (error) {
       console.error("Error signing in with email:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
+    setIsLoading(true);
     try {
-      const user = await signInWithGoogle();
-      console.log("Signed in user with Google:", user);
+      await signInWithGoogle();
       closeAuthModal();
     } catch (error) {
       console.error("Error signing in with Google:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -69,6 +99,11 @@ const AuthModal = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
+            {emailError && (
+              <p className="text-primary-100 text-xs italic ml-1">
+                {emailError}
+              </p>
+            )}
           </div>
           <div className="mb-4">
             <Input
@@ -79,9 +114,21 @@ const AuthModal = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            {passwordError && (
+              <p className="text-primary-100 text-xs italic ml-1">
+                {passwordError}
+              </p>
+            )}
           </div>
-          <Button type="submit" className="w-full">
-            Continue
+          <Button
+            type="submit"
+            className="w-full flex items-center justify-center"
+          >
+            {isLoading ? (
+              <BeatLoader className="py-1.5" color="#ffffff" size={8} />
+            ) : (
+              "Continue"
+            )}
           </Button>
         </form>
       </div>
