@@ -1,5 +1,5 @@
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getFirestore, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import React, {
   createContext,
   ReactNode,
@@ -8,7 +8,7 @@ import React, {
   useState,
 } from "react";
 
-import { auth } from "../lib/firebase/firebase";
+import { auth, firestore } from "../lib/firebase/firebase";
 import { User } from "../lib/types";
 
 interface AuthContextProps {
@@ -42,7 +42,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     let unsubscribe: (() => void) | undefined;
 
     if (user?.uid) {
-      const firestore = getFirestore();
       const userDocRef = doc(firestore, "users", user.uid);
 
       unsubscribe = onSnapshot(userDocRef, (docSnapshot) => {

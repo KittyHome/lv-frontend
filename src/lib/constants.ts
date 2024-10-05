@@ -1,9 +1,9 @@
 import { Animal, ButtonStatus } from "./types";
-import Animal1 from "/videos/video1.mp4";
-import Animal2 from "/videos/video2.mp4";
-import Animal3 from "/videos/video3.mp4";
-import Animal4 from "/videos/video4.mp4";
-import Animal5 from "/videos/video5.mp4";
+import Animal1 from "/images/video1.gif";
+import Animal2 from "/images/video2.gif";
+import Animal3 from "/images/video3.gif";
+import Animal4 from "/images/video4.gif";
+import Animal5 from "/images/video5.gif";
 
 export const ANIMALS: Animal[] = [
   {

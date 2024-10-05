@@ -3,17 +3,27 @@ import { HiTicket } from "react-icons/hi2";
 import { Tooltip } from "react-tooltip";
 
 import TicketModal from "./TicketModal/TicketModal";
+import { useAppContext } from "../hooks/useAppContext";
+import { useAuth } from "../hooks/useAuth";
+import { toast } from "react-toastify";
 
 const FloatingTicketButton: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { user } = useAuth();
+  const { openAuthModal } = useAppContext();
 
   const closeModal = useCallback(() => {
     setIsOpen(false);
   }, []);
 
   const handleClick = useCallback(() => {
-    setIsOpen(true);
-  }, []);
+    if (user) {
+      setIsOpen(true);
+    } else {
+      toast.info("Please log in to purchase a ticket.");
+      openAuthModal();
+    }
+  }, [user, openAuthModal]);
 
   return (
     <>

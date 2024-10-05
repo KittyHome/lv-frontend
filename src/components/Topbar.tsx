@@ -21,6 +21,10 @@ const Topbar = () => {
     navigate("/account");
   }, [navigate]);
 
+  const handleContact = useCallback(() => {
+    navigate("/contact-us");
+  }, [navigate]);
+
   return (
     <div className="h-[70px] flex items-center justify-between px-10 z-10 relative">
       <img
@@ -30,7 +34,11 @@ const Topbar = () => {
         onClick={() => navigate("/")}
       />
       <div className="flex items-center gap-5">
-        <motion.button whileHover={{ scale: 1.05 }} className="font-bold">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          className="font-bold"
+          onClick={handleContact}
+        >
           Contact Us
         </motion.button>
         {user ? (

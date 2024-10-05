@@ -1,14 +1,13 @@
 import { Outlet } from "react-router-dom";
 import { Tooltip } from "react-tooltip";
 
-import Topbar from "../components/Topbar";
-import Banner from "../components/Banner";
-import FloatingTicketButton from "../components/FloatingTicketButton";
-import FloatingClock from "../components/FloatingClock/FloatingClock";
 import AuthModal from "../components/AuthModal/AuthModal";
+import Banner from "../components/Banner";
+import FloatingClock from "../components/FloatingClock/FloatingClock";
 import Footer from "../components/Footer";
+import Topbar from "../components/Topbar";
 
-const DefaultLayout: React.FC = () => {
+const MainLayout = () => {
   return (
     <div>
       <Banner content="Don't miss out! Buy your tickets now and join the excitement!" />
@@ -17,13 +16,12 @@ const DefaultLayout: React.FC = () => {
         <Outlet />
       </div>
       <Tooltip
-        id="animated-number-tooltip"
+        id="global-tooltip"
         className="z-50 max-w-[250px]"
         style={{
           backgroundColor: "var(--color-background-200)",
         }}
       />
-      <FloatingTicketButton />
       <FloatingClock />
       <AuthModal />
       <Footer />
@@ -31,4 +29,4 @@ const DefaultLayout: React.FC = () => {
   );
 };
 
-export default DefaultLayout;
+export default MainLayout;

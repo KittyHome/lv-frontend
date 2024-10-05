@@ -1,18 +1,19 @@
+import { collection, onSnapshot } from "firebase/firestore";
 import React, {
   createContext,
-  useContext,
-  useState,
   ReactNode,
   useCallback,
+  useContext,
   useEffect,
+  useState,
 } from "react";
 import { toast } from "react-toastify";
 
-import { AnimalId, ButtonStatus } from "../lib/types";
 import { PAD_BUTTONS } from "../lib/constants";
+import { processVote } from "../lib/firebase/utils";
+import { AnimalId, ButtonStatus } from "../lib/types";
 import { useAuth } from "./useAuth";
-import { collection, getFirestore, onSnapshot } from "firebase/firestore";
-import { getFunctions, httpsCallable } from "firebase/functions";
+import { firestore } from "../lib/firebase/firebase";
 
 interface AppContextProps {
   isOpenAuthModal: boolean;
@@ -56,13 +57,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
           return;
         }
 
-        const functions = getFunctions();
-        const processVote = httpsCallable(functions, "processVote");
-        processVote({
-          animalId: name,
-          padId: id,
-          isUp,
-        })
+        processVote(name, id, isUp)
           .then(() => {
             toast(`You ${action} **${name}** with a value of ${value}!`, {
               type: "success",
@@ -90,7 +85,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
   }, [user?.padStates]);
 
   useEffect(() => {
-    const firestore = getFirestore();
     const unsubscribe = onSnapshot(
       collection(firestore, "animals"),
       (snapshot) => {

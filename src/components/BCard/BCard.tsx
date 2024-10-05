@@ -52,14 +52,7 @@ const BCard: React.FC<BCardProps> = ({ imgSrc, title, description, vote }) => {
       <div className="flex lg:flex-col flex-row gap-1 w-full h-[fit-content]">
         <div className="flex items-center">
           <div className="relative xl:max-w-full lg:max-w-[230px] lg:max-h-[180px] xl:max-h-full lg:aspect-auto xl:aspect-square max-w-[120px] overflow-clip flex items-center rounded">
-            <video
-              src={imgSrc}
-              className="rounded pointer-events-none"
-              autoPlay
-              loop
-              muted
-            />
-            {/* <img src={imgSrc} className="rounded" /> */}
+            <img src={imgSrc} className="rounded" />
             <div className="absolute bg-background-200 top-2 left-2 px-4 h-[25px] w-[fit-content] flex items-center justify-center rounded-full opacity-80">
               {vote}
             </div>

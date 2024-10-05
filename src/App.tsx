@@ -1,19 +1,24 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import DefaultLayout from "./layouts/DefaultLayout";
-import Dashboard from "./pages/Dashboard";
+import GameLayout from "./layouts/GameLayout";
+import MainLayout from "./layouts/MainLayout";
 import Account from "./pages/Account";
 import ComingSoon from "./pages/ComingSoon";
+import ContactUs from "./pages/ContactUs";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
     <Routes>
-      <Route element={<DefaultLayout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/" element={<Navigate to="/dashboard" />} />
+      <Route element={<MainLayout />}>
+        <Route element={<GameLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/" element={<Navigate to="/dashboard" />} />
+        </Route>
         <Route path="/account" element={<Account />} />
+        <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="*" element={<ComingSoon />} />
       </Route>
-      <Route path="*" element={<ComingSoon />} />
     </Routes>
   );
 }
