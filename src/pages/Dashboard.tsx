@@ -7,6 +7,7 @@ import GradientBackground from "../components/GradientBackground";
 import Trend from "../components/Trend";
 import { useAppContext } from "../hooks/useAppContext";
 import { ANIMALS } from "../lib/constants";
+import GoldBG from "/images/gold_bg.webp";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -57,15 +58,22 @@ const Dashboard = () => {
       <GradientBackground />
       <div className="container flex flex-col items-center p-2 gap-5 m-auto overflow-x-clip justify-center">
         <div className="w-full flex flex-col gap-5 z-10 overflow-x-clip">
-          <div className="flex flex-col items-center">
-            <h2 className="text-2xl font-bold">Prize Pool</h2>
+          <div className="relative flex flex-col items-center">
+            <h2 className="text-2xl font-bold select-none">Next Prize Pool</h2>
             <AnimatedNumber
-              target={0}
+              target={8783269}
               tooltip="This is the current prize pool! Buy a ticket now for your chance to win big!"
               symbol="$"
               size="lg"
-              className="permanent-marker-regular"
+              className="nabla-regular relative z-10"
             />
+            <motion.div
+              className="absolute -top-[60px] opacity-20 blur-sm z-0 pointer-events-none"
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
+            >
+              <img className="w-[250px]" src={GoldBG} alt="Gold Background" />
+            </motion.div>
           </div>
           <CardBox />
           <Trend />

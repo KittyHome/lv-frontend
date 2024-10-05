@@ -44,7 +44,7 @@ const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
     <div
       ref={ref}
       className="flex items-center flex-col mb-5"
-      data-tooltip-id="animated-number-tooltip"
+      data-tooltip-id="global-tooltip"
       data-tooltip-content={tooltip}
     >
       <motion.div
@@ -56,7 +56,7 @@ const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
           transition: { duration: 0.2, yoyo: Infinity },
         }}
         className={clsx(
-          "bg-gradient-to-r from-primary-100 via-primary-200 to-primary-300 text-transparent bg-clip-text select-none",
+          "select-none",
           size === "sm" ? "text-xl" : size === "lg" ? "text-6xl" : "text-2xl",
           className
         )}

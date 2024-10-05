@@ -3,14 +3,14 @@ import { Tooltip } from "react-tooltip";
 
 import AuthModal from "../components/AuthModal/AuthModal";
 import Banner from "../components/Banner";
-import FloatingClock from "../components/FloatingClock/FloatingClock";
+import FloatingClock from "../components/FloatingClock";
 import Footer from "../components/Footer";
 import Topbar from "../components/Topbar";
 
 const MainLayout = () => {
   return (
     <div>
-      <Banner content="Don't miss out! Buy your tickets now and join the excitement!" />
+      <Banner content="Sign-up now to get 100+ free votes!" />
       <Topbar />
       <div className="z-0">
         <Outlet />

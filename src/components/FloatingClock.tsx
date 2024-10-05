@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect, useMemo } from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
 
-import { fetchNextGameTime } from "../../lib/firebase/utils";
+import { fetchNextGameTime } from "../lib/firebase/utils";
 
 const MAX_SECONDS = 3600;
 
@@ -47,6 +47,10 @@ const FloatingClock = () => {
       dragConstraints={screenConstraints}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 1 }}
+      title={`Game ends in ${String(Math.floor(time / 60)).padStart(
+        2,
+        "0"
+      )}m ${String(time % 60).padStart(2, "0")}s`}
     >
       <CircularProgressbar
         className="pointer-events-none"

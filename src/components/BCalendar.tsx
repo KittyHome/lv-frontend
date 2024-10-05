@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Calendar from "react-calendar";
 
 import Input from "../common/Input";
@@ -19,6 +19,7 @@ const BCalendar: React.FC<BCalendarProps> = ({
   onChange,
   direction = "left",
 }) => {
+  const calendarRef = useRef<HTMLDivElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const handleDateChange = (value: Value) => {
@@ -26,8 +27,24 @@ const BCalendar: React.FC<BCalendarProps> = ({
     setIsOpen(false);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={calendarRef}>
       <Input
         className="cursor-pointer"
         type="text"

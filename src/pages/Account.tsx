@@ -1,5 +1,6 @@
 import { MdNotifications } from "react-icons/md";
 import { HiWallet, HiUserCircle } from "react-icons/hi2";
+import { BsInfoCircle } from "react-icons/bs";
 
 import Button from "../common/Button";
 import Input from "../common/Input";
@@ -46,12 +47,20 @@ const Account = () => {
               <h3 className="font-bold text-xl flex items-center gap-2">
                 <MdNotifications />
                 Notification
+                <small
+                  className="text-[12px] cursor-pointer -mt-2"
+                  data-tooltip-id="global-tooltip"
+                  data-tooltip-content="Get email updates on game status. Feature exclusive to advanced users!"
+                >
+                  <BsInfoCircle />
+                </small>
               </h3>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 opacity-70">
                 <input
                   type="checkbox"
                   id="notification"
                   className="form-checkbox h-5 w-5 rounded focus:ring-primary-500"
+                  disabled
                 />
                 <label htmlFor="notification" className="ml-2 text-text-200">
                   Receive notification about game status in every 15mins
