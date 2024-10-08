@@ -10,11 +10,11 @@ function TableBody({ columns, rows }: TableBodyProps) {
   return rows.map((row: IRow, index: number) => (
     <div
       key={index}
-      className="flex items-center bg-background-100 hover:bg-background-200"
+      className="flex items-center bg-background-100 hover:bg-background-200 rounded-lg mt-1 text-text-100/70"
     >
       <div
         key={null}
-        className={clsx("shrink-0 py-2.5 px-4 flex items-center")}
+        className={clsx("shrink-0 py-1.5 px-4 flex items-center")}
         style={{
           width: 80,
         }}
@@ -24,7 +24,7 @@ function TableBody({ columns, rows }: TableBodyProps) {
       {columns.map((column: IColumn, index: number) => (
         <div
           key={index}
-          className={clsx("shrink-0 py-2.5 px-4 flex items-center", {
+          className={clsx("shrink-0 py-1.5 px-4 flex items-center", {
             grow: column.grow,
             "justify-center": column.align === "center",
             "justify-end": column.align === "right",

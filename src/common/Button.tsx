@@ -11,7 +11,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ variant = "primary", className = "", children, onClick, badge }, ref) => {
-    const defaultClasses = "p-3 py-2 rounded min-h-[40px] relative";
+    const defaultClasses = "p-3 py-2 rounded-lg min-h-[40px] relative";
     const variantClasses =
       variant === "primary"
         ? "bg-primary-gradient hover:shadow-glow-primary"

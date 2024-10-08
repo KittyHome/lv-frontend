@@ -1,9 +1,9 @@
-import { useCallback, useState } from "react";
+import clsx from "clsx";
 import moment from "moment";
+import { useCallback, useState } from "react";
 
 import PopupPanel from "../common/PopupPanel";
 import Switch from "../common/Switch";
-import clsx from "clsx";
 
 interface NotificationProps {
   content: string;
@@ -46,25 +46,7 @@ const Notification: React.FC<NotificationProps> = ({
 
 const Inbox = () => {
   const [checked, setChecked] = useState(false);
-  const [notifications, setNotifications] = useState([
-    {
-      content:
-        "Congratulations! You have successfully completed the task assigned to you. Your dedication and hard work have paid off, and we are thrilled to see your progress. Keep up the great work!",
-      time: new Date(Date.now() - Math.floor(Math.random() * 10000000000)),
-      isRead: false,
-    },
-    {
-      content:
-        "Congratulations! You have successfully completed the task assigned to you. Your dedication and hard work have paid off, and we are thrilled to see your progress. Keep up the great work!",
-      time: new Date(Date.now() - Math.floor(Math.random() * 10000000000)),
-      isRead: false,
-    },
-    {
-      content:
-        "Congratulations! You have successfully completed the task assigned to you. Your dedication and hard work have paid off, and we are thrilled to see your progress. Keep up the great work!",
-      time: new Date(Date.now() - Math.floor(Math.random() * 10000000000)),
-      isRead: false,
-    },
+  const [notifications] = useState([
     {
       content:
         "Congratulations! You have successfully completed the task assigned to you. Your dedication and hard work have paid off, and we are thrilled to see your progress. Keep up the great work!",

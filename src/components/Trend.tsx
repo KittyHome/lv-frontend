@@ -28,7 +28,7 @@ const Trend = () => {
   };
 
   return (
-    <div className="flex flex-col items-center bg-gradient-to-b from-secondary-100 to-background-200 rounded border border-background-100 shadow backdrop-blur w-full">
+    <div className="flex flex-col items-center bg-gradient-to-b from-secondary-100 to-background-200 rounded-lg border border-background-100 shadow backdrop-blur w-full">
       <div className="px-5 p-3 w-full">
         <div className="flex justify-between items-center w-full">
           <p className="font-bold text-2xl">Trends</p>

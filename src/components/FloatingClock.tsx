@@ -2,12 +2,13 @@ import { motion } from "framer-motion";
 import { useState, useEffect, useMemo } from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
 
-import { fetchNextGameTime } from "../lib/firebase/utils";
+import { useAppContext } from "../hooks/useAppContext";
 
 const MAX_SECONDS = 3600;
 
 const FloatingClock = () => {
   const [time, setTime] = useState<number>(MAX_SECONDS);
+  const { nextGameTime, updateNextGameTime } = useAppContext();
 
   useEffect(() => {
     const timerID = setInterval(() => {
@@ -20,12 +21,15 @@ const FloatingClock = () => {
   }, []);
 
   useEffect(() => {
-    fetchNextGameTime().then((newDate?: Date) => {
-      if (newDate) {
-        setTime(Math.floor((newDate.getTime() - new Date().getTime()) / 1000));
-      }
-    });
+    updateNextGameTime();
   }, []);
+
+  useEffect(() => {
+    nextGameTime &&
+      setTime(
+        Math.floor((nextGameTime.getTime() - new Date().getTime()) / 1000)
+      );
+  }, [nextGameTime]);
 
   const progress = useMemo(() => (time / MAX_SECONDS) * 100, [time]);
 

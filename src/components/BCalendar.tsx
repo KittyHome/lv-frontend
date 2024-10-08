@@ -46,7 +46,7 @@ const BCalendar: React.FC<BCalendarProps> = ({
   return (
     <div className="relative" ref={calendarRef}>
       <Input
-        className="cursor-pointer"
+        className="cursor-pointer w-[100px]"
         type="text"
         readOnly
         value={value instanceof Date ? value.toLocaleDateString() : ""}

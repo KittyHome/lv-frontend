@@ -1,28 +1,36 @@
-import { useState } from "react";
-import PopupPanel from "../common/PopupPanel";
-import { AnimalId } from "../lib/types";
+import clsx from "clsx";
 import moment from "moment";
-import { ANIMALS } from "../lib/constants";
+import { useEffect } from "react";
 
-type Ticket = {
-  order: AnimalId[];
-  createdAt: Date;
-};
+import PopupPanel from "../common/PopupPanel";
+import { useAppContext } from "../hooks/useAppContext";
+import { ANIMALS } from "../lib/constants";
+import { Ticket } from "../lib/types";
 
 interface ActiveTicketProps {
   ticket: Ticket;
+  size?: "sm" | "md";
 }
-
-const ActiveTicket: React.FC<ActiveTicketProps> = ({ ticket }) => {
+export const ActiveTicket: React.FC<ActiveTicketProps> = ({
+  ticket,
+  size = "md",
+}) => {
   const { order, createdAt } = ticket;
 
   return (
     <div className="bg-background-100 hover:bg-background-200 cursor-pointer rounded-lg border border-text-100/10">
-      <div className={`p-2 text-sm`}>
-        <p className="text-xs text-gray-500 text-right">
-          {moment(createdAt).fromNow()}
-        </p>
-        <div className="flex justify-between mt-1">
+      <div
+        className={clsx(
+          "p-2 px-3 text-sm",
+          size === "md" ? "flex justify-between items-center" : "flex flex-col"
+        )}
+      >
+        {size === "sm" && (
+          <p className="text-right text-sm text-gray-500">
+            {moment(createdAt).fromNow()}
+          </p>
+        )}
+        <div className={clsx("gap-2 mt-1 flex")}>
           {order.map((animalName, index) => {
             const animal = ANIMALS.find((a) => a.name === animalName);
             return (
@@ -31,40 +39,28 @@ const ActiveTicket: React.FC<ActiveTicketProps> = ({ ticket }) => {
                   key={index}
                   src={animal.avatar}
                   alt={animal.name}
-                  className="h-12 w-12 inline-block rounded"
+                  className="h-12 w-12 inline-block rounded-lg"
                 />
               )
             );
           })}
         </div>
+        {size === "md" && (
+          <p className="text-xs text-gray-500 text-right bg-background-200 rounded-full py-1 px-3">
+            {moment(createdAt).fromNow()}
+          </p>
+        )}
       </div>
     </div>
   );
 };
 
 const ActiveTicketBox = () => {
-  const [tickets, setTickets] = useState<Ticket[]>([
-    {
-      order: [
-        "DandyPounce",
-        "Flickerdoodle",
-        "MystiPurr",
-        "Puzzlebounce",
-        "Whiskerwisp",
-      ],
-      createdAt: new Date(),
-    },
-    {
-      order: [
-        "Flickerdoodle",
-        "DandyPounce",
-        "MystiPurr",
-        "Puzzlebounce",
-        "Whiskerwisp",
-      ],
-      createdAt: new Date(),
-    },
-  ]);
+  const { myTickets, updateNextGameTime } = useAppContext();
+
+  useEffect(() => {
+    updateNextGameTime();
+  }, [updateNextGameTime]);
 
   return (
     <PopupPanel className="relative w-[300px] flex flex-col">
@@ -75,13 +71,13 @@ const ActiveTicketBox = () => {
         </div>
       </div>
       <div className="flex flex-col overflow-y-auto max-h-[300px] gap-1 p-1">
-        {tickets.length > 0 ? (
-          tickets.map((ticket, idx) => (
-            <ActiveTicket key={idx} ticket={ticket} />
+        {myTickets.length > 0 ? (
+          myTickets.map((ticket, idx) => (
+            <ActiveTicket key={idx} ticket={ticket} size="sm" />
           ))
         ) : (
           <div className="w-full flex items-center justify-center p-5 opacity-50">
-            No active ticket
+            No active tickets available
           </div>
         )}
       </div>

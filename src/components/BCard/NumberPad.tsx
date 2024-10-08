@@ -26,7 +26,7 @@ const NumberPadButton: React.FC<NumberPadButtonProps> = ({
           1 -
           (disabledDate.getTime() - new Date().getTime()) / timeInterval / 1000;
 
-        setProgress(newProgress > 0 ? newProgress : null);
+        setProgress(newProgress > 0 ? newProgress : 0);
       } else {
         interval && clearInterval(interval);
         setProgress(null);
@@ -53,7 +53,7 @@ const NumberPadButton: React.FC<NumberPadButtonProps> = ({
         className={clsx(
           "w-[45px] h-[45px] flex items-center justify-center cursor-pointer",
           "bg-background-100",
-          !!progress
+          progress !== null
             ? "cursor-not-allowed opacity-30"
             : "hover:bg-background-200"
         )}
@@ -61,7 +61,7 @@ const NumberPadButton: React.FC<NumberPadButtonProps> = ({
       >
         {text}
       </div>
-      {progress && (
+      {progress !== null && (
         <div
           className={clsx(
             "absolute left-0 bottom-0 w-[45px]",

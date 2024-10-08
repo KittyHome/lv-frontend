@@ -12,10 +12,10 @@ const AnimalItem: React.FC<AnimalItemProps> = ({ item, vote }) => {
     >
       <img
         src={item.avatar}
-        className="rounded overflow-clip pointer-events-none"
+        className="rounded-lg overflow-clip pointer-events-none"
         alt={item.name}
       />
-      <div className="absolute left-1/2 bottom-2 -translate-x-1/2 w-[fit-content] px-2 bg-background-200 rounded">
+      <div className="absolute left-1/2 bottom-2 -translate-x-1/2 w-[fit-content] px-2 bg-background-200 rounded-lg">
         {vote}
       </div>
     </div>

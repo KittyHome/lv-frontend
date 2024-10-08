@@ -13,9 +13,9 @@ const Account = () => {
     <div className="bg-background-200 p-5">
       <div className="mx-auto container">
         <h1 className="text-2xl font-bold mb-4">Account Page</h1>
-        <div className="bg-background-200 rounded border border-secondary-100 flex">
+        <div className="bg-background-200 rounded-lg border border-secondary-100 flex">
           <div className="flex-1 flex flex-col gap-3">
-            <div className="border border-background-100 rounded bg-background-100 p-5 flex flex-col gap-3">
+            <div className="border border-background-100 rounded-lg bg-background-100 p-5 flex flex-col gap-3">
               <h3 className="font-bold text-xl flex items-center gap-2">
                 <HiUserCircle />
                 Profile
@@ -43,7 +43,7 @@ const Account = () => {
               </div>
               <Button>Save</Button>
             </div>
-            <div className="flex flex-col gap-3 border border-background-100 bg-background-100 p-5 rounded">
+            <div className="flex flex-col gap-3 border border-background-100 bg-background-100 p-5 rounded-lg">
               <h3 className="font-bold text-xl flex items-center gap-2">
                 <MdNotifications />
                 Notification
@@ -59,7 +59,7 @@ const Account = () => {
                 <input
                   type="checkbox"
                   id="notification"
-                  className="form-checkbox h-5 w-5 rounded focus:ring-primary-500"
+                  className="form-checkbox h-5 w-5 rounded-lg focus:ring-primary-500"
                   disabled
                 />
                 <label htmlFor="notification" className="ml-2 text-text-200">
@@ -67,7 +67,7 @@ const Account = () => {
                 </label>
               </div>
             </div>
-            <div className="flex gap-3 border border-background-100 bg-background-100 rounded p-5 flex-col">
+            <div className="flex gap-3 border border-background-100 bg-background-100 rounded-lg p-5 flex-col">
               <h3 className="font-bold text-xl flex items-center gap-2">
                 <HiWallet />
                 Wallet
@@ -78,7 +78,7 @@ const Account = () => {
                     You can deposit money by sending crypto to below address
                   </p>
                   <img
-                    className="w-[200px] h-[200px] bg-white p-2 rounded"
+                    className="w-[200px] h-[200px] bg-white p-2 rounded-lg"
                     src="https://www.freepnglogos.com/uploads/qr-code-png/qr-code-ios-will-enable-the-iphone-camera-app-read-codes-29.png"
                   />
                   <p className="text-text-100/50 py-2">

@@ -29,7 +29,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       setLoading(false);
 
       if (firebaseUser) {
-        setUser((prvUser) => ({ ...(prvUser || {}), ...firebaseUser }));
+        setUser((prvUser) => ({
+          ...(prvUser || { money: 0, votes: 0 }),
+          ...firebaseUser,
+        }));
       } else {
         setUser(null);
       }
@@ -46,20 +49,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
       unsubscribe = onSnapshot(userDocRef, (docSnapshot) => {
         if (docSnapshot.exists()) {
-          const { isAdvancedUser, money, padStates, username } =
-            docSnapshot.data();
+          const {
+            isAdvancedUser,
+            isSpinAvailable,
+            money,
+            votes,
+            padStates,
+            username,
+          } = docSnapshot.data();
 
           setUser((prvUser) => ({
             ...(prvUser as User),
-            isAdvancedUser,
+            username,
             money,
+            votes,
             padStates: padStates.map((padState: any) => ({
               ...padState,
               disabledDate: padState.disabledDate
                 ? new Date(padState.disabledDate)
                 : undefined,
             })),
-            username,
+            isAdvancedUser,
+            isSpinAvailable,
           }));
         }
       });

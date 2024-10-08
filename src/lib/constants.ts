@@ -55,3 +55,6 @@ export const PAD_BUTTONS: ButtonStatus[] = [
     timeInterval: 800,
   },
 ];
+
+export const MAX_COUNT_OF_ACTIVE_TICKETS = 5;
+export const TICKET_PRICE = 20;

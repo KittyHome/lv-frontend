@@ -11,7 +11,7 @@ const ContactUs = () => {
         <h3 className="text-xl">
           We'd love to hear from you! Reach out to us anytime.
         </h3>
-        <div className="gap-5 bg-background-100 p-5 w-full mt-10 rounded flex flex-col">
+        <div className="gap-5 bg-background-100 p-5 w-full mt-10 rounded-lg flex flex-col">
           <div className="w-full">
             <label className="ml-2 text-sm font-bold">Email:</label>
             <Input className="w-full" placeholder="Enter your email here" />
@@ -25,7 +25,7 @@ const ContactUs = () => {
           </div>
           <Button>Submit</Button>
         </div>
-        <div className="bg-background-100 p-5 rounded w-full flex lg:flex-row flex-col gap-5 mt-10">
+        <div className="bg-background-100 p-5 rounded-lg w-full flex lg:flex-row flex-col gap-5 mt-10">
           <div className="flex flex-col gap-3">
             <div>
               <p className="text-lg font-bold">Address</p>
@@ -48,7 +48,7 @@ const ContactUs = () => {
             allowFullScreen={false}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            className="w-full h-60 rounded"
+            className="w-full h-60 rounded-lg"
           ></iframe>
         </div>
       </div>

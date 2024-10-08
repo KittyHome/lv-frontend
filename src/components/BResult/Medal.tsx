@@ -35,7 +35,7 @@ const Medal: React.FC<MedalProps> = ({ imgSrc, count }) => {
   return (
     <div ref={ref} className="flex flex-col items-center justify-center gap-2">
       <motion.img
-        className="w-[80px]"
+        className="w-[60px]"
         src={imgSrc}
         alt="Medal"
         initial={initialAnimation}

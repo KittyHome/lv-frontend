@@ -52,14 +52,14 @@
 }
 
 .react-calendar__navigation button:disabled {
-  background-color: var(--color-background-200);
+  opacity: 0.3;
   border-radius: 0.5rem;
+  cursor: not-allowed;
 }
 
 .react-calendar__navigation button:enabled:hover,
 .react-calendar__navigation button:enabled:focus {
   background-color: var(--color-background-200);
-  border-radius: 0.5rem;
 }
 
 .react-calendar__month-view__weekdays {

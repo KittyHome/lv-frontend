@@ -48,16 +48,16 @@ const BCard: React.FC<BCardProps> = ({ imgSrc, title, description, vote }) => {
   );
 
   return (
-    <div className="bg-secondary-100/80 p-2 rounded flex lg:flex-row xl:flex-col gap-2 overflow-clip h-full w-full justify-center items-center border border-background-100 shadow-lg">
+    <div className="bg-secondary-100/80 p-2 rounded-lg flex lg:flex-row xl:flex-col gap-2 overflow-clip h-full w-full justify-center items-center border border-background-100 shadow-lg">
       <div className="flex lg:flex-col flex-row gap-1 w-full h-[fit-content]">
         <div className="flex items-center">
-          <div className="relative xl:max-w-full lg:max-w-[230px] lg:max-h-[180px] xl:max-h-full lg:aspect-auto xl:aspect-square max-w-[120px] overflow-clip flex items-center rounded">
-            <img src={imgSrc} className="rounded" />
+          <div className="relative xl:max-w-full lg:max-w-[230px] lg:max-h-[180px] xl:max-h-full lg:aspect-auto xl:aspect-square max-w-[120px] overflow-clip flex items-center rounded-lg">
+            <img src={imgSrc} className="rounded-lg" />
             <div className="absolute bg-background-200 top-2 left-2 px-4 h-[25px] w-[fit-content] flex items-center justify-center rounded-full opacity-80">
               {vote}
             </div>
             <motion.div
-              className={`absolute left-0 top-0 w-full h-full backdrop-blur rounded flex gap-2 flex-col overflow-clip xl:p-2 p-0.5`}
+              className={`absolute left-0 top-0 w-full h-full backdrop-blur rounded-lg flex gap-2 flex-col overflow-clip xl:p-2 p-0.5`}
               initial={{ opacity: 0 }}
               whileHover={{ opacity: 1 }}
               whileTap={{ opacity: 1 }}
@@ -70,7 +70,7 @@ const BCard: React.FC<BCardProps> = ({ imgSrc, title, description, vote }) => {
           </div>
         </div>
         <div className="flex flex-col min-w-[230px]">
-          <div className="p-2 flex justify-between items-center rounded">
+          <div className="p-2 flex justify-between items-center rounded-lg">
             <VoteButton active={isUp} onClick={changeMode(true)} />
             <NumberPad isUp={isUp} name={title as AnimalId} />
             <VoteButton
@@ -80,7 +80,7 @@ const BCard: React.FC<BCardProps> = ({ imgSrc, title, description, vote }) => {
               onClick={changeMode(false)}
             />
           </div>
-          <div className="bg-background-200 flex justify-between items-center rounded">
+          <div className="bg-background-200 flex justify-between items-center rounded-lg">
             <BarChart data={chartData} />
           </div>
         </div>

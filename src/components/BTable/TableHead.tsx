@@ -8,7 +8,7 @@ interface TableHeadProps {
 
 function TableHead({ columns }: TableHeadProps) {
   return (
-    <div className="flex items-center backdrop-blur bg-background-100">
+    <div className="flex items-center backdrop-blur bg-background-200 rounded-lg">
       <div
         key={null}
         className={clsx("shrink-0 py-2.5 px-4 flex items-center")}
