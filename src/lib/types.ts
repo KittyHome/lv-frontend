@@ -15,6 +15,7 @@ export interface ButtonStatus {
 }
 
 export interface Animal {
+  aniAvatar: string;
   avatar: string;
   name: AnimalId;
   description: string;

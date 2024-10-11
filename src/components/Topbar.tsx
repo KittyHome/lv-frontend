@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useCallback } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
-import { GiHamburgerMenu } from "react-icons/gi";
+import { GiHamburgerMenu, GiTargetPrize } from "react-icons/gi";
 import { HiDocumentCheck, HiHome, HiTicket } from "react-icons/hi2";
 import { IoSettings } from "react-icons/io5";
 import { MdNotifications, MdOutlineSupportAgent } from "react-icons/md";
@@ -56,14 +56,14 @@ const TOPBAR_BUTTONS = [
     icon: <HiHome />,
   },
   {
-    title: "Terms of Service",
-    navigate: "/terms",
-    icon: <HiDocumentCheck />,
-  },
-  {
     title: "Contact",
     navigate: "/contact-us",
     icon: <MdOutlineSupportAgent />,
+  },
+  {
+    title: "Results",
+    navigate: "/results",
+    icon: <GiTargetPrize />,
   },
 ];
 
@@ -86,7 +86,7 @@ const Topbar = () => {
   }, [navigate]);
 
   return (
-    <div className="container m-auto sticky top-0 z-50 p-2">
+    <div className="container mx-auto sticky top-0 z-50 p-2">
       <div className="h-[60px] flex items-center justify-between px-3 backdrop-blur rounded-lg shadow-lg border border-text-200/10">
         <div className="md:flex hidden items-center gap-5">
           <img

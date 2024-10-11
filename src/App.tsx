@@ -6,6 +6,7 @@ import Account from "./pages/Account";
 import ComingSoon from "./pages/ComingSoon";
 import ContactUs from "./pages/ContactUs";
 import Dashboard from "./pages/Dashboard";
+import Result from "./pages/Result";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         </Route>
         <Route path="/account" element={<Account />} />
         <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="/results" element={<Result />} />
         <Route path="*" element={<ComingSoon />} />
       </Route>
     </Routes>

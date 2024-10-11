@@ -43,7 +43,7 @@ const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
   return (
     <div
       ref={ref}
-      className="flex items-center flex-col mb-5"
+      className="flex items-center flex-col"
       data-tooltip-id="global-tooltip"
       data-tooltip-content={tooltip}
     >
@@ -57,7 +57,7 @@ const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
         }}
         className={clsx(
           "select-none",
-          size === "sm" ? "text-xl" : size === "lg" ? "text-6xl" : "text-2xl",
+          size === "sm" ? "text-md" : size === "lg" ? "text-7xl" : "text-2xl",
           className
         )}
       >

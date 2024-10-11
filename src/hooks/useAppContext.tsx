@@ -68,9 +68,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
         const value = updatedState ? updatedState.value : 0;
         const action = isUp ? "upvoted" : "downvoted";
 
-        if (!user.money || user.money < value * 0.1) {
-          toast.error("You have insufficient funds!");
-          return;
+        const voteDeficit = value - user.votes;
+        if (voteDeficit > 0) {
+          const deductionAmount = 0.1 * voteDeficit;
+          if (user.money < deductionAmount) {
+            toast.error("You have insufficient funds to complete the vote!");
+            return;
+          }
         }
 
         processVote(name, id, isUp)

@@ -22,7 +22,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <main
       data-theme="dark"
-      className="bg-background-100 text-text-100 min-h-screen"
+      className="bg-background-100 text-text-100 min-h-screen flex flex-col"
     >
       <AuthProvider>
         <AppProvider>

@@ -36,7 +36,8 @@ const Dropdown: React.FC<DropdownProps> = ({ options, onChange, value }) => {
           fontSize: "0.875rem",
           backgroundColor: "var(--color-background-200)",
           color: "var(--color-text-100)",
-          borderColor: "var(--color-secondary-100)",
+          borderColor: "var(--color-background-100)",
+          borderRadius: "0.5rem",
           outline: "none",
           "&:hover": {
             borderColor: "transparent",

@@ -10,7 +10,7 @@ function TableBody({ columns, rows }: TableBodyProps) {
   return rows.map((row: IRow, index: number) => (
     <div
       key={index}
-      className="flex items-center bg-background-100 hover:bg-background-200 rounded-lg mt-1 text-text-100/70"
+      className="flex items-center bg-background-200 hover:bg-background-100 rounded-lg mt-1 text-text-100/70"
     >
       <div
         key={null}

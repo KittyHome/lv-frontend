@@ -9,10 +9,10 @@ import Topbar from "../components/Topbar";
 
 const MainLayout = () => {
   return (
-    <div>
+    <>
       <Banner content="Sign-up now to get 100+ free votes!" />
       <Topbar />
-      <div className="z-0">
+      <div className="z-0 flex-grow">
         <Outlet />
       </div>
       <Tooltip
@@ -25,7 +25,7 @@ const MainLayout = () => {
       <FloatingClock />
       <AuthModal />
       <Footer />
-    </div>
+    </>
   );
 };
 

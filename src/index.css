@@ -58,6 +58,10 @@ body {
   font-family: "Nabla", cursive;
 }
 
+.acme-regular {
+  font-family: "Acme", cursive;
+}
+
 .recharts-default-tooltip {
   @apply backdrop-blur;
 }
