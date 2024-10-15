@@ -27,7 +27,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <AnimatePresence>
           {badge && (
             <motion.span
-              className="absolute -top-1.5 -right-1.5 bg-primary-100 rounded-full w-[fit-content] px-1 h-[15px] text-[11px] flex items-center justify-center leading-none"
+              className="absolute -top-1.5 -right-1.5 bg-primary-100 rounded-full w-[fit-content] px-1 h-[15px] min-w-[15px] text-[11px] flex items-center justify-center leading-none"
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0 }}

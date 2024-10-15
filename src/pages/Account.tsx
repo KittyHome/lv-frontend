@@ -9,7 +9,6 @@ import PageWrapper from "../components/PageWrapper";
 
 const Account = () => {
   const { user } = useAuth();
-
   return (
     <PageWrapper title="Manage your account settings and preferences">
       <div className="w-full flex flex-col gap-3 mt-3">
@@ -37,14 +36,16 @@ const Account = () => {
               disabled
             />
           </div>
-          <div className="flex flex-col gap-2">
-            <label className="ml-2 text-sm font-bold">Password</label>
-            <Input
-              className="!bg-background-100"
-              placeholder="Enter your password here"
-              disabled
-            />
-          </div>
+          {user?.providerData[0].providerId === "password" && (
+            <div className="flex flex-col gap-2">
+              <label className="ml-2 text-sm font-bold">Password</label>
+              <Input
+                className="!bg-background-100"
+                placeholder="Enter your password here"
+                disabled
+              />
+            </div>
+          )}
           <Button>Save</Button>
         </div>
         <div className="flex flex-col gap-3 border border-background-100 bg-background-200 p-3 rounded-lg">

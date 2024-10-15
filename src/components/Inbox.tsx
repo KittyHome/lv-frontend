@@ -1,20 +1,31 @@
 import clsx from "clsx";
 import moment from "moment";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import PopupPanel from "../common/PopupPanel";
 import Switch from "../common/Switch";
+import { useAppContext } from "../hooks/useAppContext";
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { firestore } from "../lib/firebase/firebase";
+import { useAuth } from "../hooks/useAuth";
+import { motion } from "framer-motion";
+import { IoCheckmarkSharp } from "react-icons/io5";
+import { MdDeleteOutline } from "react-icons/md";
 
 interface NotificationProps {
   content: string;
   time: Date;
   isRead: boolean;
+  onRead: () => void;
+  onDelete: () => void;
 }
 
 const Notification: React.FC<NotificationProps> = ({
   content,
   time,
   isRead,
+  onRead,
+  onDelete,
 }) => {
   const [expand, setExpand] = useState(false);
 
@@ -22,20 +33,44 @@ const Notification: React.FC<NotificationProps> = ({
     setExpand((prv) => !prv);
   }, []);
 
+  useEffect(() => {
+    if (expand && !isRead) {
+      onRead();
+    }
+  }, [isRead, expand, onRead]);
+
   return (
-    <div
-      className="bg-background-100 hover:bg-background-200 cursor-pointer rounded-lg border border-text-100/10"
-      onClick={toggleExpand}
-    >
+    <div className="bg-background-100 hover:bg-background-200 cursor-pointer rounded-lg border border-text-100/10">
       <div className={`p-2 text-sm ${isRead ? "opacity-50" : ""}`}>
-        <p className="text-xs text-gray-500 text-right">
-          {moment(time).fromNow()}
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-gray-500">{moment(time).fromNow()}</p>
+          <div className="flex items-center gap-2 text-[11px]">
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={onRead}
+              className="flex items-center gap-1"
+            >
+              <IoCheckmarkSharp />
+              Mark as read
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={onDelete}
+              className="flex items-center gap-1"
+            >
+              <MdDeleteOutline />
+              Delete
+            </motion.button>
+          </div>
+        </div>
         <p
           className={clsx(
             "w-full overflow-clip",
             expand ? "" : "text-ellipsis text-nowrap"
           )}
+          onClick={toggleExpand}
         >
           {content}
         </p>
@@ -46,14 +81,42 @@ const Notification: React.FC<NotificationProps> = ({
 
 const Inbox = () => {
   const [checked, setChecked] = useState(false);
-  const [notifications] = useState([
-    {
-      content:
-        "Congratulations! You have successfully completed the task assigned to you. Your dedication and hard work have paid off, and we are thrilled to see your progress. Keep up the great work!",
-      time: new Date(Date.now() - Math.floor(Math.random() * 10000000000)),
-      isRead: false,
+  const { notifications } = useAppContext();
+  const { user } = useAuth();
+
+  const handleRead = useCallback(
+    (id: string) => () => {
+      if (!user?.uid) return;
+      const notificationRef = doc(
+        firestore,
+        "users",
+        user.uid,
+        "notifications",
+        id
+      );
+      updateDoc(notificationRef, { isRead: true });
     },
-  ]);
+    [user?.uid]
+  );
+
+  const handleDelete = useCallback(
+    (id: string) => () => {
+      if (!user?.uid) return;
+      const notificationRef = doc(
+        firestore,
+        "users",
+        user.uid,
+        "notifications",
+        id
+      );
+      deleteDoc(notificationRef);
+    },
+    [user?.uid]
+  );
+
+  const filteredNotifications = notifications.filter((notification) =>
+    checked ? !notification.isRead : true
+  );
 
   return (
     <PopupPanel className="relative w-[300px] flex flex-col">
@@ -65,18 +128,20 @@ const Inbox = () => {
         </div>
       </div>
       <div className="flex flex-col overflow-y-auto max-h-[300px] gap-1 p-1">
-        {notifications.length > 0 ? (
-          notifications.map((notification, idx) => (
+        {filteredNotifications.length > 0 ? (
+          filteredNotifications.map((notification) => (
             <Notification
-              key={idx}
+              key={notification.id}
               content={notification.content}
-              time={notification.time}
+              time={notification.createdAt}
               isRead={notification.isRead}
+              onRead={handleRead(notification.id)}
+              onDelete={handleDelete(notification.id)}
             />
           ))
         ) : (
           <div className="w-full flex items-center justify-center p-5 opacity-50">
-            No notification
+            {checked ? "No unread notification" : "No notification"}
           </div>
         )}
       </div>

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 
 import VoteButton from "./VoteButton";
 import LineChart from "./LineChart";
@@ -6,26 +6,23 @@ import NumberPad from "./NumberPad";
 import { motion } from "framer-motion";
 import { AnimalId } from "../../lib/types";
 
-const generateRandomData = () => {
-  const data = Array.from({ length: 12 }, (_, index) => {
-    const hour = index * 2;
-    return {
-      primary: `${String(hour).padStart(2, "0")}:30`,
-      secondary: Math.floor(Math.random() * 250),
-    };
-  });
-  return [{ label: "Hello", data }];
-};
-
 interface BCardProps {
   imgSrc: string;
-  title: string;
+  title: AnimalId;
   description: string;
   vote: number;
+  trend: { primary: string; secondary: number }[];
+  max: number;
 }
 
-const BCard: React.FC<BCardProps> = ({ imgSrc, title, description, vote }) => {
-  const chartData = useMemo(() => generateRandomData(), []);
+const BCard: React.FC<BCardProps> = ({
+  imgSrc,
+  title,
+  description,
+  vote,
+  trend,
+  max,
+}) => {
   const [isUp, setIsUp] = useState(true);
 
   const changeMode = useCallback(
@@ -70,7 +67,9 @@ const BCard: React.FC<BCardProps> = ({ imgSrc, title, description, vote }) => {
           </div>
           <div className="relative bg-background-200 border border-primary-100/30 border-dashed flex flex-col justify-between items-center rounded-lg mt-1 shadow-lg">
             <div className="relative z-[5] w-full h-[55px]">
-              <LineChart data={chartData} />
+              {trend.length > 0 && (
+                <LineChart data={[{ label: "Votes", data: trend }]} max={max} />
+              )}
             </div>
             <span className="absolute top-1 left-1 z-30 text-[10px] bg-primary-100/30 backdrop-blur px-2 rounded-full">
               Trends

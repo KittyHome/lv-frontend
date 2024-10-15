@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Confetti from "react-confetti";
 
 import Button from "../common/Button";
@@ -26,13 +26,14 @@ const SpinModal: React.FC<SpinModalProps> = ({ isOpen, closeModal }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user?.isSpinAvailable) {
+    if (user?.isSpinAvailable && isOpen) {
       setLoading(true);
+      setIsShowResult(false);
       fetchDailySpinData()
         .then(setSpinItems)
         .finally(() => setLoading(false));
     }
-  }, [user?.isSpinAvailable]);
+  }, [user?.isSpinAvailable, isOpen]);
 
   const handleSpin = useCallback(() => {
     spinItems &&
@@ -45,10 +46,11 @@ const SpinModal: React.FC<SpinModalProps> = ({ isOpen, closeModal }) => {
     setIsShowResult(true);
   }, []);
 
-  const item =
-    spinItems &&
-    targetIndexRef?.current !== undefined &&
-    spinItems[targetIndexRef.current];
+  const item = useMemo(() => {
+    return spinItems && targetIndexRef?.current !== undefined
+      ? spinItems[targetIndexRef.current]
+      : undefined;
+  }, [spinItems, targetIndexRef.current]);
 
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>

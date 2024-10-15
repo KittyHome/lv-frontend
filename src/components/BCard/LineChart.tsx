@@ -8,9 +8,10 @@ interface ChartData {
 
 interface LineChartProps {
   data: ChartData[];
+  max: number;
 }
 
-const LineChart: React.FC<LineChartProps> = ({ data }) => {
+const LineChart: React.FC<LineChartProps> = ({ data, max }) => {
   const primaryAxis = React.useMemo<
     AxisOptions<(typeof data)[number]["data"][number]>
   >(
@@ -30,7 +31,8 @@ const LineChart: React.FC<LineChartProps> = ({ data }) => {
         getValue: (datum) => datum.secondary,
         show: false,
         showGrid: true,
-        elementType: "line",
+        max,
+        elementType: "bubble",
       },
     ],
     []
@@ -41,7 +43,7 @@ const LineChart: React.FC<LineChartProps> = ({ data }) => {
       const gradientId = "lineGradient";
       return {
         stroke: `url(#${gradientId})`,
-        fill: "none",
+        fill: "#EE1D4F",
         width: "8px",
       };
     };

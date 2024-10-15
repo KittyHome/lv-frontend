@@ -41,3 +41,11 @@ export type SpinItem = {
   type: Bonus;
   amount: number;
 };
+
+export type Notification = {
+  id: string;
+  isRead: boolean;
+  isNotified: boolean;
+  content: string;
+  createdAt: Date;
+};

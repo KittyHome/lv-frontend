@@ -78,3 +78,16 @@ export const fetchPrizePool = async () => {
     console.error("Error fetching prize pool:", error);
   }
 };
+
+export const fetchTrends = async () => {
+  try {
+    const getTrends = httpsCallable<
+      undefined,
+      Record<string, Record<AnimalId, number>>
+    >(functions, "getTrends");
+    const result = await getTrends();
+    return result.data;
+  } catch (error) {
+    console.error("Error fetching trends:", error);
+  }
+};

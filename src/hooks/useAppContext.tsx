@@ -1,4 +1,4 @@
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, updateDoc, doc } from "firebase/firestore";
 import React, {
   createContext,
   ReactNode,
@@ -13,9 +13,10 @@ import { PAD_BUTTONS } from "../lib/constants";
 import {
   fetchNextGameTime,
   fetchPrizePool,
+  fetchTrends,
   processVote,
 } from "../lib/firebase/utils";
-import { AnimalId, ButtonStatus, Ticket } from "../lib/types";
+import { AnimalId, ButtonStatus, Ticket, Notification } from "../lib/types";
 import { useAuth } from "./useAuth";
 import { firestore } from "../lib/firebase/firebase";
 
@@ -36,6 +37,8 @@ interface AppContextProps {
   updateNextGameTime: () => void;
   nextGameTime: Date | null;
   prizePool: number;
+  trends: Record<AnimalId, { primary: string; secondary: number }[]>;
+  notifications: Notification[];
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -60,6 +63,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
   const [myTickets, setMyTickets] = useState<Ticket[]>([]);
   const [nextGameTime, setNextGameTime] = useState<Date | null>(null);
   const [prizePool, setPrizePool] = useState<number>(0);
+  const [trends, setTrends] = useState<
+    Record<AnimalId, { primary: string; secondary: number }[]>
+  >({
+    DandyPounce: [],
+    Flickerdoodle: [],
+    MystiPurr: [],
+    Puzzlebounce: [],
+    Whiskerwisp: [],
+  });
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const updateDisabledDate = useCallback(
     (name: AnimalId, isUp: boolean, id: string) => {
@@ -192,6 +205,100 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
     return () => clearInterval(intervalId);
   }, []);
 
+  useEffect(() => {
+    const fetchAndSetTrends = () => {
+      nextGameTime &&
+        fetchTrends().then((t) => {
+          const timeDifference = nextGameTime.getTime() - new Date().getTime();
+          const currentMinute = 60 - timeDifference / 1000 / 60;
+          const formattedTrends: Record<
+            AnimalId,
+            { primary: string; secondary: number }[]
+          > = {
+            DandyPounce: [],
+            Flickerdoodle: [],
+            MystiPurr: [],
+            Puzzlebounce: [],
+            Whiskerwisp: [],
+          };
+
+          for (
+            let minute = 0;
+            minute <= Math.ceil(currentMinute / 5) * 5;
+            minute += 5
+          ) {
+            const percentage = `${((minute / 60) * 100).toFixed(0)}`.padStart(
+              2,
+              "0"
+            );
+            const trendData = (t ? t[`${percentage}%`] || {} : {}) as Record<
+              AnimalId,
+              number
+            >;
+
+            Object.keys(formattedTrends).forEach((animalId) => {
+              const previousData =
+                formattedTrends[animalId as AnimalId].slice(-1)[0]?.secondary ||
+                0;
+              formattedTrends[animalId as AnimalId].push({
+                primary: `${percentage}`,
+                secondary:
+                  trendData[animalId as AnimalId] !== undefined
+                    ? trendData[animalId as AnimalId]
+                    : previousData,
+              });
+            });
+          }
+
+          setTrends(formattedTrends);
+        });
+    };
+
+    fetchAndSetTrends();
+
+    const intervalId = setInterval(fetchAndSetTrends, 60000);
+
+    return () => clearInterval(intervalId);
+  }, [nextGameTime]);
+
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    const notificationsRef = collection(
+      firestore,
+      "users",
+      user.uid,
+      "notifications"
+    );
+    const unsubscribe = onSnapshot(notificationsRef, (snapshot) => {
+      const notificationsData: Notification[] = snapshot.docs.map(
+        (document) => {
+          const data = document.data();
+          if (!data.isNotified) {
+            toast.info(`${data.content}`);
+            data.isNotified = true;
+            const notificationRef = doc(
+              firestore,
+              "users",
+              user.uid,
+              "notifications",
+              document.id
+            );
+            updateDoc(notificationRef, { isNotified: true });
+          }
+          return {
+            id: document.id,
+            ...data,
+            createdAt: data.createdAt ? data.createdAt.toDate() : new Date(),
+          };
+        }
+      ) as Notification[];
+      setNotifications(notificationsData);
+    });
+
+    return () => unsubscribe();
+  }, [user?.uid]);
+
   return (
     <AppContext.Provider
       value={{
@@ -206,6 +313,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
         updateNextGameTime,
         nextGameTime,
         prizePool,
+        trends,
+        notifications,
       }}
     >
       {children}

@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useCallback } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
 import { GiHamburgerMenu, GiTargetPrize } from "react-icons/gi";
-import { HiDocumentCheck, HiHome, HiTicket } from "react-icons/hi2";
+import { HiHome, HiTicket } from "react-icons/hi2";
 import { IoSettings } from "react-icons/io5";
 import { MdNotifications, MdOutlineSupportAgent } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
@@ -69,7 +69,7 @@ const TOPBAR_BUTTONS = [
 
 const Topbar = () => {
   const navigate = useNavigate();
-  const { myTickets, openAuthModal } = useAppContext();
+  const { myTickets, notifications, openAuthModal } = useAppContext();
   const { user } = useAuth();
 
   const handleAuthButton = useCallback(() => {
@@ -147,7 +147,15 @@ const Topbar = () => {
 
               <BPopup
                 trigger={
-                  <Button variant="secondary" className="text-xl" badge={0}>
+                  <Button
+                    variant="secondary"
+                    className="text-xl"
+                    badge={
+                      notifications.filter(
+                        (notification) => !notification.isRead
+                      ).length
+                    }
+                  >
                     <MdNotifications />
                   </Button>
                 }

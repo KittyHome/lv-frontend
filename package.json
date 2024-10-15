@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
     "@tsparticles/engine": "^3.5.0",
     "@tsparticles/plugin-polygon-mask": "^3.5.0",
     "@tsparticles/react": "^3.0.0",

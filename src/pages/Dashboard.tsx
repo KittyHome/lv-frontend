@@ -29,7 +29,7 @@ const itemVariants = {
 };
 
 const CardBox = () => {
-  const { votes } = useAppContext();
+  const { votes, trends } = useAppContext();
   const [isSort, setIsSort] = useState(true);
 
   const sortedAnimals = useMemo(() => {
@@ -37,6 +37,13 @@ const CardBox = () => {
       ? [...ANIMALS].sort((a, b) => (votes[a.name] > votes[b.name] ? -1 : 1))
       : ANIMALS;
   }, [isSort, votes]);
+
+  const maxTrendValue = Object.values(trends).reduce((max, trendArray) => {
+    const localMax = trendArray.reduce((localMax, current) => {
+      return current.secondary > localMax ? current.secondary : localMax;
+    }, 0);
+    return localMax > max ? localMax : max;
+  }, 0);
 
   return (
     <div>
@@ -60,6 +67,8 @@ const CardBox = () => {
               title={animal.name}
               description={animal.description}
               vote={votes[animal.name]}
+              trend={trends[animal.name]}
+              max={maxTrendValue}
             />
           </motion.div>
         ))}
