@@ -1,13 +1,14 @@
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Confetti from "react-confetti";
+import { toast } from "react-toastify";
 
 import Button from "../common/Button";
 import Modal from "../common/Modal/Modal";
-import { useAuth } from "../hooks/useAuth";
-import { fetchDailySpinData, fetchDailySpinIndex } from "../lib/firebase/utils";
-import { SpinItem } from "../lib/types";
+import { useAppContext } from "../hooks/useAppContext";
+import { applySpin } from "../lib/supabase/utils";
+import { Bonus, SpinItem } from "../lib/types";
 import DailySpin from "./DailySpin";
 import BagGoldCoins from "/images/Bag-gold-coins.png";
 import CashOut from "/images/cash-out.png";
@@ -19,42 +20,42 @@ interface SpinModalProps {
   closeModal: () => void;
 }
 const SpinModal: React.FC<SpinModalProps> = ({ isOpen, closeModal }) => {
-  const { user } = useAuth();
   const [spinItems, setSpinItems] = useState<SpinItem[] | undefined>();
-  const targetIndexRef = useRef<number>();
   const [isShowResult, setIsShowResult] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { spin: targetSpin } = useAppContext();
+  const targetIndexRef = useRef<number>();
+  const [result, setResult] = useState<SpinItem>();
 
   useEffect(() => {
-    if (user?.isSpinAvailable && isOpen) {
-      setLoading(true);
-      setIsShowResult(false);
-      fetchDailySpinData()
-        .then(setSpinItems)
-        .finally(() => setLoading(false));
-    }
-  }, [user?.isSpinAvailable, isOpen]);
+    if (!targetSpin) return;
 
-  const handleSpin = useCallback(() => {
-    spinItems &&
-      fetchDailySpinIndex(spinItems).then(
-        (targetIndex) => (targetIndexRef.current = targetIndex)
-      );
-  }, [spinItems]);
+    const generateRandomSpinData = (): SpinItem => {
+      const types: Bonus[] = ["withdraw", "credit", "votes"];
+      return {
+        type: types[Math.floor(Math.random() * types.length)],
+        amount: Math.floor(Math.random() * 100) + 1,
+      };
+    };
+
+    const randomSpinItems = Array.from({ length: 16 }, generateRandomSpinData);
+    const randomIndex = Math.floor(Math.random() * randomSpinItems.length);
+
+    randomSpinItems[randomIndex] = targetSpin;
+    setSpinItems(randomSpinItems);
+    setResult(targetSpin);
+    targetIndexRef.current = randomIndex;
+  }, [targetSpin]);
 
   const handleCompleted = useCallback(() => {
     setIsShowResult(true);
+    applySpin().catch((err) => {
+      toast.error(`Error applying spin: ${err.message}`);
+    });
   }, []);
-
-  const item = useMemo(() => {
-    return spinItems && targetIndexRef?.current !== undefined
-      ? spinItems[targetIndexRef.current]
-      : undefined;
-  }, [spinItems, targetIndexRef.current]);
 
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
-      <div className="relative bg-gradient-to-b from-primary-200/90 to-background-100 rounded-lg w-[26rem] shadow-lg">
+      <div className="relative bg-gradient-to-b from-primary-200/90 to-background-100 rounded-lg max-w-[26rem] shadow-lg mx-auto">
         <div className="py-8">
           <h3 className="text-3xl text-center font-bold">Spin to Win Big!</h3>
         </div>
@@ -62,7 +63,7 @@ const SpinModal: React.FC<SpinModalProps> = ({ isOpen, closeModal }) => {
           className={clsx("relative", isShowResult ? "h-[17rem]" : "h-[21rem]")}
         >
           <AnimatePresence>
-            {!isShowResult && !loading && (
+            {!isShowResult && (
               <motion.div
                 className="absolute w-full h-full"
                 initial={{ scale: 0 }}
@@ -73,7 +74,6 @@ const SpinModal: React.FC<SpinModalProps> = ({ isOpen, closeModal }) => {
                 <DailySpin
                   presents={spinItems || []}
                   target={targetIndexRef}
-                  onSpin={handleSpin}
                   onCompleted={handleCompleted}
                 />
               </motion.div>
@@ -98,16 +98,16 @@ const SpinModal: React.FC<SpinModalProps> = ({ isOpen, closeModal }) => {
                 exit={{ scale: isShowResult ? 0 : 1 }}
                 transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
               >
-                {item && (
+                {result && (
                   <div className="flex flex-col items-center justify-center relative z-30 h-full w-full">
                     <span className="size-72 flex items-center justify-center">
-                      {item.type === "credit" ? (
+                      {result.type === "credit" ? (
                         <img
                           src={BagGoldCoins}
                           alt="Credit"
                           className="-mt-3"
                         />
-                      ) : item.type === "votes" ? (
+                      ) : result.type === "votes" ? (
                         <img
                           src={VoteUp}
                           alt="Votes"
@@ -118,11 +118,11 @@ const SpinModal: React.FC<SpinModalProps> = ({ isOpen, closeModal }) => {
                       )}
                     </span>
                     <span className="absolute -bottom-8 font-bold text-xl">
-                      {item.type === "credit"
-                        ? `You have won $${item.amount} credits!`
-                        : item.type === "votes"
-                        ? `You have received ${item.amount} free votes!`
-                        : `You can withdraw ${item.amount} times today!`}
+                      {result.type === "credit"
+                        ? `You have won $${result.amount} credits!`
+                        : result.type === "votes"
+                        ? `You have received ${result.amount} free votes!`
+                        : `You can withdraw ${result.amount} times today!`}
                     </span>
                   </div>
                 )}

@@ -1,4 +1,3 @@
-import { collection, onSnapshot, updateDoc, doc } from "firebase/firestore";
 import React, {
   createContext,
   ReactNode,
@@ -9,36 +8,42 @@ import React, {
 } from "react";
 import { toast } from "react-toastify";
 
-import { PAD_BUTTONS } from "../lib/constants";
+import { DEFAULT_ANIMALS } from "../lib/constants";
 import {
-  fetchNextGameTime,
-  fetchPrizePool,
-  fetchTrends,
-  processVote,
-} from "../lib/firebase/utils";
-import { AnimalId, ButtonStatus, Ticket, Notification } from "../lib/types";
+  createAnimalRealtimeChannel,
+  createNotificationRealtimeChannel,
+  createSpinRealtimeChannel,
+  createStageRealtimeChannel,
+  createTicketRealtimeChannel,
+  getActiveTicketData,
+  getAnimalData,
+  getNotificationData,
+  getSpinData,
+  getStageData,
+  updateNotification,
+} from "../lib/supabase/utils";
+import {
+  Animal,
+  AnimalId,
+  Bonus,
+  Notification,
+  SpinItem,
+  Stage,
+  Ticket,
+} from "../lib/types";
 import { useAuth } from "./useAuth";
-import { firestore } from "../lib/firebase/firebase";
-
-type OrderDetail = {
-  key: AnimalId;
-  rank: number;
-};
 
 interface AppContextProps {
   isOpenAuthModal: boolean;
   openAuthModal: () => void;
   closeAuthModal: () => void;
-  padStates: ButtonStatus[];
-  updateDisabledDate: (name: AnimalId, isUp: boolean, id: string) => void;
-  setPadStates: (padStates: ButtonStatus[]) => void;
-  votes: Record<AnimalId, number>;
+  animals: Animal[];
   myTickets: Ticket[];
-  updateNextGameTime: () => void;
-  nextGameTime: Date | null;
-  prizePool: number;
-  trends: Record<AnimalId, { primary: string; secondary: number }[]>;
   notifications: Notification[];
+  selectedAnimal?: Animal;
+  setSelectedAnimal: (value: Animal) => void;
+  stage?: Stage;
+  spin?: SpinItem;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -48,273 +53,200 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const { user } = useAuth();
   const [isOpenAuthModal, setIsOpenAuthModal] = useState(false);
+  const [animals, setAnimals] = useState<Animal[]>(DEFAULT_ANIMALS);
+  const [myTickets, setMyTickets] = useState<Ticket[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [selectedAnimal, setSelectedAnimal] = useState<Animal>();
+  const [stage, setStage] = useState<Stage>();
+  const [spin, setSpin] = useState<SpinItem>();
 
   const openAuthModal = useCallback(() => setIsOpenAuthModal(true), []);
   const closeAuthModal = useCallback(() => setIsOpenAuthModal(false), []);
 
-  const [padStates, setPadStates] = useState<ButtonStatus[]>(PAD_BUTTONS);
-  const [votes, setVotes] = useState<Record<AnimalId, number>>({
-    DandyPounce: 0,
-    Flickerdoodle: 0,
-    MystiPurr: 0,
-    Puzzlebounce: 0,
-    Whiskerwisp: 0,
-  });
-  const [myTickets, setMyTickets] = useState<Ticket[]>([]);
-  const [nextGameTime, setNextGameTime] = useState<Date | null>(null);
-  const [prizePool, setPrizePool] = useState<number>(0);
-  const [trends, setTrends] = useState<
-    Record<AnimalId, { primary: string; secondary: number }[]>
-  >({
-    DandyPounce: [],
-    Flickerdoodle: [],
-    MystiPurr: [],
-    Puzzlebounce: [],
-    Whiskerwisp: [],
-  });
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-
-  const updateDisabledDate = useCallback(
-    (name: AnimalId, isUp: boolean, id: string) => {
-      if (user) {
-        const updatedState = padStates.find((state) => state.id === id);
-        const value = updatedState ? updatedState.value : 0;
-        const action = isUp ? "upvoted" : "downvoted";
-
-        const voteDeficit = value - user.votes;
-        if (voteDeficit > 0) {
-          const deductionAmount = 0.1 * voteDeficit;
-          if (user.money < deductionAmount) {
-            toast.error("You have insufficient funds to complete the vote!");
-            return;
-          }
-        }
-
-        processVote(name, id, isUp)
-          .then(() => {
-            toast(`You ${action} **${name}** with a value of ${value}!`, {
-              type: "success",
-            });
-            console.log("Vote processed successfully:");
+  // Initialize animal data on component mount and establish a real-time subscription
+  useEffect(() => {
+    getAnimalData().then(
+      (animalData) =>
+        animalData &&
+        setAnimals((prevAnimals) =>
+          prevAnimals.map((prevAnimal) => {
+            const updatedAnimal = animalData.find(
+              (animal) => animal.name === prevAnimal.name
+            );
+            return updatedAnimal
+              ? { ...prevAnimal, ...updatedAnimal }
+              : prevAnimal;
           })
-          .catch((error: unknown) => {
-            console.error("Error processing vote:", error);
-            toast("Failed to process vote. Please try again.", {
-              type: "error",
-            });
-          });
-      } else {
-        openAuthModal();
-        toast("Please log in to vote.", {
-          type: "info",
-        });
-      }
-    },
-    [user?.money, padStates, openAuthModal]
-  );
+        )
+    );
 
-  const updateNextGameTime = useCallback(() => {
-    fetchNextGameTime().then((nt?: Date) => {
-      if (!nt) return;
-      setNextGameTime(nt);
+    const animalRealtimeChannel = createAnimalRealtimeChannel((payload) => {
+      const updatedAnimal = payload.new as any;
+      setAnimals((prevAnimals) =>
+        prevAnimals.map((animal) =>
+          animal.id === updatedAnimal.id
+            ? { ...animal, ...updatedAnimal }
+            : animal
+        )
+      );
     });
+
+    return () => {
+      animalRealtimeChannel.unsubscribe();
+    };
   }, []);
 
+  // Initialize stage data on component mount and establish a real-time subscription
   useEffect(() => {
-    const intervalId = setInterval(updateNextGameTime, 300000);
-    return () => clearInterval(intervalId);
-  }, [updateNextGameTime]);
+    getStageData().then((stageData) => stageData && setStage(stageData));
 
+    const stageRealtimeChannel = createStageRealtimeChannel((payload) => {
+      const updatedStage = payload.new as any;
+      updatedStage.is_active &&
+        setStage({
+          id: updatedStage.id,
+          prizePool: updatedStage.prize_pool,
+          endedAt: new Date(updatedStage.ended_at),
+          startedAt: new Date(updatedStage.created_at),
+        });
+    });
+
+    return () => {
+      stageRealtimeChannel.unsubscribe();
+    };
+  }, []);
+
+  // Initialize spin data on component mount and establish a real-time subscription
   useEffect(() => {
-    const userId = user?.uid;
-    if (userId && nextGameTime) {
-      // Init ticket list
-      setMyTickets([]);
+    if (!user?.id) return;
 
-      const nextGameTimeId = nextGameTime
-        .toISOString()
-        .replace(/[-:]/g, "_")
-        .split(".")[0];
+    getSpinData(user.id).then((spinData) => spinData && setSpin(spinData));
 
-      const unsubscribe = onSnapshot(
-        collection(firestore, "tickets", nextGameTimeId, userId),
-        (snapshot) => {
-          snapshot.docChanges().forEach((change) => {
-            if (change.type === "added") {
-              const data = change.doc.data();
-              setMyTickets((prv) => {
-                const newCreatedAt = new Date(data.createdAt);
-                if (
-                  prv.some(
-                    (ticket) =>
-                      ticket.createdAt.getTime() === newCreatedAt.getTime()
-                  )
-                ) {
-                  return prv;
-                }
-                return [
-                  ...prv,
-                  {
-                    order: data.orders
-                      .sort((a: OrderDetail, b: OrderDetail) => a.rank - b.rank)
-                      .map((item: OrderDetail) => item.key),
-                    createdAt: newCreatedAt,
-                  },
-                ];
+    const spinRealtimeChannel = createSpinRealtimeChannel((payload) => {
+      const updatedSpin = payload.new as any;
+      !updatedSpin.is_used
+        ? setSpin({
+            type: updatedSpin.type as Bonus,
+            amount: Number(updatedSpin.amount),
+          })
+        : setSpin(undefined);
+    }, user.id);
+
+    return () => {
+      spinRealtimeChannel.unsubscribe();
+    };
+  }, [user?.id]);
+
+  // Initialize ticket data on component mount and establish a real-time subscription
+  useEffect(() => {
+    if (!stage?.id || !user?.id) return;
+
+    getActiveTicketData(stage.id, user.id).then(
+      (ticketData) => ticketData && setMyTickets(ticketData)
+    );
+
+    const ticketRealtimeChannel = createTicketRealtimeChannel((payload) => {
+      const updatedTicket = payload.new as any;
+      setMyTickets((prvTickets) => [
+        ...prvTickets,
+        {
+          order: updatedTicket.order as AnimalId[],
+          createdAt: new Date(updatedTicket.created_at),
+        },
+      ]);
+    }, user.id);
+
+    return () => {
+      ticketRealtimeChannel.unsubscribe();
+    };
+  }, [stage?.id, user?.id]);
+
+  // Initialize notification data on component mount and establish a real-time subscription
+  useEffect(() => {
+    if (!user?.id) return;
+
+    getNotificationData(user.id).then(
+      (notificationData) =>
+        notificationData &&
+        setNotifications(
+          notificationData.map((notification) => {
+            if (!notification.isNotified) {
+              updateNotification(user.id, notification.id, {
+                isNotified: true,
               });
+              toast.info(notification.content);
             }
-          });
-        }
-      );
-
-      return () => unsubscribe();
-    }
-  }, [user?.uid, nextGameTime?.toISOString()]);
-
-  useEffect(() => {
-    user?.padStates && setPadStates(user.padStates);
-  }, [user?.padStates]);
-
-  useEffect(() => {
-    const unsubscribe = onSnapshot(
-      collection(firestore, "animals"),
-      (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          setVotes((prvVotes) => ({
-            ...prvVotes,
-            [change.doc.id as AnimalId]: change.doc.data().vote,
-          }));
-        });
-      }
+            return { ...notification, isNotified: true };
+          })
+        )
     );
 
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const fetchAndSetPrizePool = () => {
-      fetchPrizePool().then((gamePrizePool?: number) =>
-        setPrizePool(gamePrizePool || 0)
-      );
-    };
-
-    fetchAndSetPrizePool();
-
-    const intervalId = setInterval(fetchAndSetPrizePool, 60000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  useEffect(() => {
-    const fetchAndSetTrends = () => {
-      nextGameTime &&
-        fetchTrends().then((t) => {
-          const timeDifference = nextGameTime.getTime() - new Date().getTime();
-          const currentMinute = 60 - timeDifference / 1000 / 60;
-          const formattedTrends: Record<
-            AnimalId,
-            { primary: string; secondary: number }[]
-          > = {
-            DandyPounce: [],
-            Flickerdoodle: [],
-            MystiPurr: [],
-            Puzzlebounce: [],
-            Whiskerwisp: [],
-          };
-
-          for (
-            let minute = 0;
-            minute <= Math.ceil(currentMinute / 5) * 5;
-            minute += 5
-          ) {
-            const percentage = `${((minute / 60) * 100).toFixed(0)}`.padStart(
-              2,
-              "0"
+    const notificationRealtimeChannel = createNotificationRealtimeChannel(
+      (payload) => {
+        if (payload.eventType === "INSERT" || payload.eventType === "UPDATE") {
+          const updatedNotification = payload.new;
+          if (updatedNotification.is_deleted) {
+            setNotifications((prevNotifications) =>
+              prevNotifications.filter(
+                (notification) => notification.id !== updatedNotification.id
+              )
             );
-            const trendData = (t ? t[`${percentage}%`] || {} : {}) as Record<
-              AnimalId,
-              number
-            >;
+          } else {
+            setNotifications((prevNotifications) => {
+              const updatedNotificationObj = {
+                id: updatedNotification.id,
+                content: updatedNotification.content,
+                isRead: updatedNotification.is_read,
+                isNotified: updatedNotification.is_notified,
+                createdAt: new Date(updatedNotification.created_at),
+              };
 
-            Object.keys(formattedTrends).forEach((animalId) => {
-              const previousData =
-                formattedTrends[animalId as AnimalId].slice(-1)[0]?.secondary ||
-                0;
-              formattedTrends[animalId as AnimalId].push({
-                primary: `${percentage}`,
-                secondary:
-                  trendData[animalId as AnimalId] !== undefined
-                    ? trendData[animalId as AnimalId]
-                    : previousData,
-              });
+              if (!updatedNotificationObj.isNotified) {
+                updateNotification(user.id, updatedNotificationObj.id, {
+                  isNotified: true,
+                });
+                toast.info(updatedNotificationObj.content);
+                updatedNotificationObj.isNotified = true;
+              }
+
+              const notificationIndex = prevNotifications.findIndex(
+                (notification) => notification.id === updatedNotification.id
+              );
+
+              if (notificationIndex !== -1) {
+                return prevNotifications.map((notification, index) =>
+                  index === notificationIndex
+                    ? updatedNotificationObj
+                    : notification
+                );
+              } else {
+                return [...prevNotifications, updatedNotificationObj];
+              }
             });
           }
-
-          setTrends(formattedTrends);
-        });
-    };
-
-    fetchAndSetTrends();
-
-    const intervalId = setInterval(fetchAndSetTrends, 60000);
-
-    return () => clearInterval(intervalId);
-  }, [nextGameTime]);
-
-  useEffect(() => {
-    if (!user?.uid) return;
-
-    const notificationsRef = collection(
-      firestore,
-      "users",
-      user.uid,
-      "notifications"
-    );
-    const unsubscribe = onSnapshot(notificationsRef, (snapshot) => {
-      const notificationsData: Notification[] = snapshot.docs.map(
-        (document) => {
-          const data = document.data();
-          if (!data.isNotified) {
-            toast.info(`${data.content}`);
-            data.isNotified = true;
-            const notificationRef = doc(
-              firestore,
-              "users",
-              user.uid,
-              "notifications",
-              document.id
-            );
-            updateDoc(notificationRef, { isNotified: true });
-          }
-          return {
-            id: document.id,
-            ...data,
-            createdAt: data.createdAt ? data.createdAt.toDate() : new Date(),
-          };
         }
-      ) as Notification[];
-      setNotifications(notificationsData);
-    });
+      },
+      user.id
+    );
 
-    return () => unsubscribe();
-  }, [user?.uid]);
+    return () => {
+      notificationRealtimeChannel.unsubscribe();
+    };
+  }, [user?.id]);
 
   return (
     <AppContext.Provider
       value={{
-        votes,
+        animals,
         isOpenAuthModal,
         openAuthModal,
         closeAuthModal,
-        padStates,
-        updateDisabledDate,
-        setPadStates,
         myTickets,
-        updateNextGameTime,
-        nextGameTime,
-        prizePool,
-        trends,
         notifications,
+        selectedAnimal,
+        setSelectedAnimal,
+        stage,
+        spin,
       }}
     >
       {children}

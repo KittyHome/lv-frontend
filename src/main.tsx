@@ -8,9 +8,9 @@ import { AppProvider } from "./hooks/useAppContext.tsx";
 import { AuthProvider } from "./hooks/useAuth.tsx";
 
 import "./index.css";
+import "../src/styles/Calendar.css";
 import "react-circular-progressbar/dist/styles.css";
 import "react-toastify/dist/ReactToastify.css";
-import "../src/styles/Calendar.css";
 
 const error = console.error;
 console.error = (...args: any) => {

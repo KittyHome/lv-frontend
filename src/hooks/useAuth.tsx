@@ -1,5 +1,3 @@
-import { onAuthStateChanged } from "firebase/auth";
-import { doc, onSnapshot } from "firebase/firestore";
 import React, {
   createContext,
   ReactNode,
@@ -8,12 +6,15 @@ import React, {
   useState,
 } from "react";
 
-import { auth, firestore } from "../lib/firebase/firebase";
+import supabase from "../lib/supabase/client";
+import {
+  createUserRealtimeChannel,
+  getUserDataById,
+} from "../lib/supabase/utils";
 import { User } from "../lib/types";
 
 interface AuthContextProps {
-  user: User | null;
-  loading: boolean;
+  user?: User;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -21,72 +22,59 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [user, setUser] = useState<User>();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setLoading(false);
-
-      if (firebaseUser) {
-        setUser((prvUser) => ({
-          ...(prvUser || { money: 0, votes: 0 }),
-          ...firebaseUser,
-        }));
-      } else {
-        setUser(null);
-      }
+    const {
+      data: { subscription: authListener },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const user = session?.user;
+      if (user) setUser({ ...(user as User), money: 0, votes: 0 });
+      else setUser(undefined);
     });
 
-    return () => unsubscribe();
+    return () => authListener.unsubscribe();
   }, []);
 
   useEffect(() => {
-    let unsubscribe: (() => void) | undefined;
+    if (!user?.id) return;
 
-    if (user?.uid) {
-      const userDocRef = doc(firestore, "users", user.uid);
+    const updateUserData = async () => {
+      const fetchedUserData = await getUserDataById(user.id);
+      fetchedUserData &&
+        setUser((currentUser) => ({
+          ...(currentUser as User),
+          ...fetchedUserData,
+        }));
+    };
+    updateUserData();
 
-      unsubscribe = onSnapshot(userDocRef, (docSnapshot) => {
-        if (docSnapshot.exists()) {
-          const {
-            isAdvancedUser,
-            isSpinAvailable,
-            money,
-            votes,
-            padStates,
-            username,
-          } = docSnapshot.data();
-
-          setUser((prvUser) => ({
-            ...(prvUser as User),
-            username,
-            money,
-            votes,
-            padStates: padStates.map((padState: any) => ({
-              ...padState,
-              disabledDate: padState.disabledDate
-                ? new Date(padState.disabledDate)
-                : undefined,
-            })),
-            isAdvancedUser,
-            isSpinAvailable,
-          }));
-        }
-      });
-    } else {
-      unsubscribe && unsubscribe();
-    }
+    const userRealtimeChannel = createUserRealtimeChannel(
+      user.id,
+      (payload) => {
+        const updatedUser = payload.new as any;
+        setUser((prevUser) => ({
+          ...(prevUser as User),
+          username: updatedUser.username,
+          money: updatedUser.credit,
+          votes: updatedUser.free_votes,
+          isAdvancedUser: updatedUser.is_advanced,
+          withdrawChance: Number(updatedUser.withdraw_chance),
+          voteDisabledDate:
+            updatedUser.vote_disabled_date !== null
+              ? new Date(updatedUser.vote_disabled_date)
+              : null,
+        }));
+      }
+    );
 
     return () => {
-      unsubscribe && unsubscribe();
+      userRealtimeChannel.unsubscribe();
     };
-  }, [user?.uid]);
+  }, [user?.id]);
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
   );
 };
 

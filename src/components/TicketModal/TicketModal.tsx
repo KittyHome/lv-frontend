@@ -1,48 +1,40 @@
 import clsx from "clsx";
 import { Reorder } from "framer-motion";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { toast } from "react-toastify";
 
 import Button from "../../common/Button";
 import Modal from "../../common/Modal/Modal";
 import { useAppContext } from "../../hooks/useAppContext";
-import {
-  ANIMALS,
-  MAX_COUNT_OF_ACTIVE_TICKETS,
-  TICKET_PRICE,
-} from "../../lib/constants";
-import { createTicket } from "../../lib/firebase/utils";
-import { Animal } from "../../lib/types";
+import { useAuth } from "../../hooks/useAuth";
+import { MAX_COUNT_OF_ACTIVE_TICKETS, TICKET_PRICE } from "../../lib/constants";
+import { buyNewTicket } from "../../lib/supabase/utils";
+import { AnimalId } from "../../lib/types";
 import { ActiveTicket } from "../ActiveTicketBox";
 import AnimalItem from "./AnimalItem";
-import { useAuth } from "../../hooks/useAuth";
 
 interface TicketModalProps {
   isOpen: boolean;
   closeModal: () => void;
 }
 const TicketModal: React.FC<TicketModalProps> = ({ isOpen, closeModal }) => {
-  const { votes, myTickets, nextGameTime, updateNextGameTime } =
-    useAppContext();
+  const { animals, myTickets, stage } = useAppContext();
   const { user } = useAuth();
   const divRef = useRef<HTMLDivElement>(null);
-  const [animals, setAnimals] = useState<Animal[]>(ANIMALS);
+  const [order, setOrder] = useState<AnimalId[]>(
+    animals.map((animal) => animal.name)
+  );
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    updateNextGameTime();
-  }, [isOpen, updateNextGameTime]);
-
   const isSold = useMemo(() => {
-    if (nextGameTime === null) return true;
+    if (!stage || !isOpen) return true;
 
     const currentTime = new Date();
     const timeDifference =
-      (nextGameTime.getTime() - currentTime.getTime()) / (1000 * 60);
+      (stage.endedAt.getTime() - currentTime.getTime()) / (1000 * 60);
     return timeDifference < 30;
-  }, [nextGameTime]);
+  }, [stage, isOpen]);
 
   const handleSubmit = useCallback(() => {
     if (isLoading) return;
@@ -69,13 +61,7 @@ const TicketModal: React.FC<TicketModalProps> = ({ isOpen, closeModal }) => {
     }
 
     setIsLoading(true);
-
-    const order = animals.map((animal, index) => ({
-      key: animal.name,
-      rank: index,
-    }));
-
-    createTicket(order)
+    buyNewTicket(order)
       .then(() => {
         toast.success("New ticket created successfully!");
         closeModal();
@@ -85,7 +71,7 @@ const TicketModal: React.FC<TicketModalProps> = ({ isOpen, closeModal }) => {
         console.error(error);
       })
       .finally(() => setIsLoading(false));
-  }, [isSold, isLoading, animals, myTickets.length, user?.money, closeModal]);
+  }, [order, isSold, isLoading, myTickets.length, user?.money, closeModal]);
 
   const isDisabled = useMemo(() => {
     return (
@@ -98,77 +84,83 @@ const TicketModal: React.FC<TicketModalProps> = ({ isOpen, closeModal }) => {
 
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
-      <div className="bg-background-100 p-5 rounded-lg shadow border-secondary-100 max-w-[540px]">
-        <p className="ml-2 mb-1 font-bold">
-          Select your desired order by dragging
-        </p>
-        <div className="w-[500px] flex" ref={divRef}>
-          <Reorder.Group
-            axis="x"
-            className="flex"
-            values={animals}
-            onReorder={(newOrder) => {
-              setAnimals(newOrder);
-            }}
-          >
-            {animals.map((item) => (
-              <Reorder.Item key={item.name} value={item}>
-                <AnimalItem item={item} vote={votes[item.name]} />
-              </Reorder.Item>
-            ))}
-          </Reorder.Group>
-        </div>
-        <div className="my-5 flex flex-col justify-between">
-          <Button
-            className={clsx(
-              "w-full",
-              isDisabled ? "cursor-not-allowed" : "cursor-pointer"
-            )}
-            variant={isDisabled ? "secondary" : "primary"}
-            disabled={isDisabled}
-            onClick={handleSubmit}
-          >
-            {isLoading ? (
-              <BeatLoader className="py-1.5" color="#ffffff" size={8} />
-            ) : (
-              "Buy | $20"
-            )}
-          </Button>
-          {isSold && (
-            <p className="text-primary-100 italic text-sm mt-1">
-              The ticket for this game is sold out. Please wait for the next
-              game to start.
-            </p>
-          )}
-          {myTickets.length >= MAX_COUNT_OF_ACTIVE_TICKETS && (
-            <p className="text-primary-100 italic text-sm mt-1">
-              You have reached the maximum limit of active tickets. Please use
-              or manage your existing tickets before acquiring more.
-            </p>
-          )}
-          {(!user?.money || user.money < TICKET_PRICE) && (
-            <p className="text-primary-100 italic text-sm mt-1">
-              You do not have sufficient funds to purchase a ticket. Please add
-              more money to your account to proceed.
-            </p>
-          )}
-        </div>
-        <div>
-          <p className="ml-2 mb-2 font-bold">Active tickets</p>
-          <div className="bg-background-200 rounded-lg p-1">
-            {myTickets.length > 0 ? (
-              <div className="flex flex-col gap-1">
-                {myTickets
-                  .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-                  .map((ticket, idx) => (
-                    <ActiveTicket key={idx} ticket={ticket} />
-                  ))}
-              </div>
-            ) : (
-              <p className="m-auto text-center text-sm py-5">
-                No active tickets available
+      <div className="mx-auto max-w-[540px] p-1">
+        <div className="bg-background-100 sm:px-5 px-2 py-5 rounded-lg shadow border-secondary-100 w-full">
+          <p className="ml-2 mb-1 font-bold">
+            Select your desired order by dragging
+          </p>
+          <div className="flex" ref={divRef}>
+            <Reorder.Group
+              axis="x"
+              className="flex"
+              values={order}
+              onReorder={(newOrder) => {
+                setOrder(newOrder);
+              }}
+            >
+              {order.map((item) => (
+                <Reorder.Item key={item} value={item}>
+                  <AnimalItem
+                    animal={animals.find((animal) => animal.name === item)}
+                  />
+                </Reorder.Item>
+              ))}
+            </Reorder.Group>
+          </div>
+          <div className="my-5 flex flex-col justify-between">
+            <Button
+              className={clsx(
+                "w-full",
+                isDisabled ? "cursor-not-allowed" : "cursor-pointer"
+              )}
+              variant={isDisabled ? "secondary" : "primary"}
+              disabled={isDisabled}
+              onClick={handleSubmit}
+            >
+              {isLoading ? (
+                <BeatLoader className="py-1.5" color="#ffffff" size={8} />
+              ) : (
+                "Buy | $20"
+              )}
+            </Button>
+            {isSold && (
+              <p className="text-primary-100 italic text-sm mt-1">
+                The ticket for this game is sold out. Please wait for the next
+                game to start.
               </p>
             )}
+            {myTickets.length >= MAX_COUNT_OF_ACTIVE_TICKETS && (
+              <p className="text-primary-100 italic text-sm mt-1">
+                You have reached the maximum limit of active tickets. Please use
+                or manage your existing tickets before acquiring more.
+              </p>
+            )}
+            {(!user?.money || user.money < TICKET_PRICE) && (
+              <p className="text-primary-100 italic text-sm mt-1">
+                You do not have sufficient funds to purchase a ticket. Please
+                add more money to your account to proceed.
+              </p>
+            )}
+          </div>
+          <div>
+            <p className="ml-2 mb-2 font-bold">Active tickets</p>
+            <div className="bg-background-200 rounded-lg p-1">
+              {myTickets.length > 0 ? (
+                <div className="flex flex-col gap-1">
+                  {myTickets
+                    .sort(
+                      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+                    )
+                    .map((ticket, idx) => (
+                      <ActiveTicket key={idx} ticket={ticket} />
+                    ))}
+                </div>
+              ) : (
+                <p className="m-auto text-center text-sm py-5">
+                  No active tickets available
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>

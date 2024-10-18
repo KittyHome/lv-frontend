@@ -1,24 +1,22 @@
 import { Animal } from "../../lib/types";
 
 interface AnimalItemProps {
-  item: Animal;
-  vote: number;
+  animal?: Animal;
 }
-const AnimalItem: React.FC<AnimalItemProps> = ({ item, vote }) => {
-  return (
-    <div
-      className="w-[100px] h-[100px] p-1 cursor-pointer relative"
-      title={item.name}
-    >
+const AnimalItem: React.FC<AnimalItemProps> = ({ animal }) => {
+  return animal ? (
+    <div className="p-1 cursor-pointer relative" title={animal.name}>
       <img
-        src={item.avatar}
+        src={animal.staticAvatarUrl}
         className="rounded-lg overflow-clip pointer-events-none"
-        alt={item.name}
+        alt={animal.name}
       />
       <div className="absolute left-1/2 bottom-2 -translate-x-1/2 w-[fit-content] px-2 bg-background-200 rounded-lg">
-        {vote}
+        {animal.vote}
       </div>
     </div>
+  ) : (
+    <></>
   );
 };
 

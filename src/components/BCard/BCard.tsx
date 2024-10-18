@@ -1,9 +1,6 @@
-import { useCallback, useState } from "react";
-
-import VoteButton from "./VoteButton";
-import LineChart from "./LineChart";
-import NumberPad from "./NumberPad";
 import { motion } from "framer-motion";
+import clsx from "clsx";
+
 import { AnimalId } from "../../lib/types";
 
 interface BCardProps {
@@ -11,8 +8,8 @@ interface BCardProps {
   title: AnimalId;
   description: string;
   vote: number;
-  trend: { primary: string; secondary: number }[];
-  max: number;
+  onClick: () => void;
+  isSelected: boolean;
 }
 
 const BCard: React.FC<BCardProps> = ({
@@ -20,27 +17,23 @@ const BCard: React.FC<BCardProps> = ({
   title,
   description,
   vote,
-  trend,
-  max,
+  onClick,
+  isSelected,
 }) => {
-  const [isUp, setIsUp] = useState(true);
-
-  const changeMode = useCallback(
-    (mode: boolean) => () => {
-      setIsUp(mode);
-    },
-    []
-  );
-
   return (
-    <div className="bg-secondary-100/80 p-2 rounded-lg flex lg:flex-row xl:flex-col gap-2 overflow-clip h-full w-full justify-center items-center border border-background-100 shadow-lg">
-      <div className="flex lg:flex-col flex-row gap-3 w-full h-[fit-content]">
+    <div
+      className="bg-secondary-100/80 justify-center items-center rounded-lg flex lg:flex-row xl:flex-col gap-2 overflow-clip h-full w-full border border-background-100 shadow-lg p-1"
+      onClick={onClick}
+    >
+      <div
+        className={clsx(
+          "flex lg:flex-col flex-row gap-3 w-[fit-content] cursor-pointer",
+          isSelected ? "border-primary-100 rounded-lg xl:border-4 border-2" : ""
+        )}
+      >
         <div className="flex items-center">
-          <div className="relative xl:max-w-full lg:max-w-[230px] lg:max-h-[180px] xl:max-h-full lg:aspect-auto xl:aspect-square max-w-[120px] overflow-clip flex items-center rounded-lg">
+          <div className="relative xl:max-w-full lg:max-w-[230px] lg:max-h-[180px] xl:max-h-full lg:aspect-auto xl:aspect-square overflow-clip flex items-center rounded-lg">
             <img src={imgSrc} className="rounded-lg" />
-            <div className="absolute bg-background-200 top-2 left-2 px-4 h-[25px] w-[fit-content] flex items-center justify-center rounded-full opacity-80">
-              {vote}
-            </div>
             <motion.div
               className={`absolute left-0 top-0 w-full h-full backdrop-blur rounded-lg flex gap-2 flex-col overflow-clip xl:p-2 p-0.5`}
               initial={{ opacity: 0 }}
@@ -52,28 +45,9 @@ const BCard: React.FC<BCardProps> = ({
                 <div className="lg:text-sm text-[10px]">{description}</div>
               </div>
             </motion.div>
-          </div>
-        </div>
-        <div className="flex flex-col min-w-[230px]">
-          <div className="p-2 flex justify-between items-center rounded-lg">
-            <VoteButton active={isUp} onClick={changeMode(true)} />
-            <NumberPad isUp={isUp} name={title as AnimalId} />
-            <VoteButton
-              active={!isUp}
-              direction="down"
-              textPosition="right"
-              onClick={changeMode(false)}
-            />
-          </div>
-          <div className="relative bg-background-200 border border-primary-100/30 border-dashed flex flex-col justify-between items-center rounded-lg mt-1 shadow-lg">
-            <div className="relative z-[5] w-full h-[55px]">
-              {trend.length > 0 && (
-                <LineChart data={[{ label: "Votes", data: trend }]} max={max} />
-              )}
+            <div className="absolute bg-background-200/50 bottom-0 left-0 px-4 w-full flex items-center justify-center rounded-lg font-bold sm:text-xl text-xs backdrop-blur">
+              {vote}
             </div>
-            <span className="absolute top-1 left-1 z-30 text-[10px] bg-primary-100/30 backdrop-blur px-2 rounded-full">
-              Trends
-            </span>
           </div>
         </div>
       </div>

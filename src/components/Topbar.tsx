@@ -11,12 +11,12 @@ import Button from "../common/Button";
 import PopupPanel from "../common/PopupPanel";
 import { useAppContext } from "../hooks/useAppContext";
 import { useAuth } from "../hooks/useAuth";
-import { signOut } from "../lib/firebase/auth";
 import BPopup from "./BPopup";
 import Inbox from "./Inbox";
 import MiniLogo from "/favicon.png";
 import Logo from "/logo.png";
 import ActiveTicketBox from "./ActiveTicketBox";
+import { signOut } from "../lib/supabase/auth";
 
 const MenuButton = ({
   className,
@@ -86,7 +86,7 @@ const Topbar = () => {
   }, [navigate]);
 
   return (
-    <div className="container mx-auto sticky top-0 z-50 p-2">
+    <div className="sticky top-0 z-50 p-2">
       <div className="h-[60px] flex items-center justify-between px-3 backdrop-blur rounded-lg shadow-lg border border-text-200/10">
         <div className="md:flex hidden items-center gap-5">
           <img

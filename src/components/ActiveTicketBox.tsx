@@ -1,10 +1,8 @@
 import clsx from "clsx";
 import moment from "moment";
-import { useEffect } from "react";
 
 import PopupPanel from "../common/PopupPanel";
 import { useAppContext } from "../hooks/useAppContext";
-import { ANIMALS } from "../lib/constants";
 import { Ticket } from "../lib/types";
 
 interface ActiveTicketProps {
@@ -15,6 +13,7 @@ export const ActiveTicket: React.FC<ActiveTicketProps> = ({
   ticket,
   size = "md",
 }) => {
+  const { animals } = useAppContext();
   const { order, createdAt } = ticket;
 
   return (
@@ -32,12 +31,12 @@ export const ActiveTicket: React.FC<ActiveTicketProps> = ({
         )}
         <div className={clsx("gap-2 mt-1 flex")}>
           {order.map((animalName, index) => {
-            const animal = ANIMALS.find((a) => a.name === animalName);
+            const animal = animals.find((a) => a.name === animalName);
             return (
               animal && (
                 <img
                   key={index}
-                  src={animal.avatar}
+                  src={animal.staticAvatarUrl}
                   alt={animal.name}
                   className="h-12 w-12 inline-block rounded-lg"
                 />
@@ -56,11 +55,7 @@ export const ActiveTicket: React.FC<ActiveTicketProps> = ({
 };
 
 const ActiveTicketBox = () => {
-  const { myTickets, updateNextGameTime } = useAppContext();
-
-  useEffect(() => {
-    updateNextGameTime();
-  }, [updateNextGameTime]);
+  const { myTickets } = useAppContext();
 
   return (
     <PopupPanel className="relative w-[300px] flex flex-col">

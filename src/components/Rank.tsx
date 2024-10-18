@@ -1,7 +1,7 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
-import { ANIMALS } from "../lib/constants";
 import { AnimalId } from "../lib/types";
+import { useAppContext } from "../hooks/useAppContext";
 
 interface RankItemProps {
   id: AnimalId;
@@ -9,12 +9,15 @@ interface RankItemProps {
   rank: number;
 }
 const RankItem: React.FC<RankItemProps> = ({ id, rank }) => {
+  const { animals } = useAppContext();
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
       className="w-full"
+      layout
     >
       <div
         className="relative w-[135%] mix-blend-screen"
@@ -30,7 +33,7 @@ const RankItem: React.FC<RankItemProps> = ({ id, rank }) => {
                 ? "polygon(0% 0, 100% 0, 100% 100%, 0 100%)"
                 : "polygon(20% 0, 100% 0, 100% 100%, 0 100%)",
           }}
-          src={ANIMALS.find((animal) => animal.name === id)?.avatar}
+          src={animals.find((animal) => animal.name === id)?.staticAvatarUrl}
           alt="Animal Image"
         />
         <div
@@ -47,22 +50,33 @@ const RankItem: React.FC<RankItemProps> = ({ id, rank }) => {
   );
 };
 
-const Rank = () => {
+interface RankProps {
+  order: AnimalId[];
+}
+const Rank: React.FC<RankProps> = ({ order }) => {
+  const { animals } = useAppContext();
+
   return (
     <div className="relative overflow-clip">
-      <div className="flex justify-center -translate-x-[6.7%]">
-        {ANIMALS.map((animal, idx) => (
-          <div
-            key={animal.name}
-            className="w-full"
-            style={{
-              transform: `translateX(${8 * idx}%)`,
-            }}
-          >
-            <RankItem id={animal.name} vote={5} rank={idx + 1} />
-          </div>
-        ))}
-      </div>
+      <motion.div className="flex justify-center -translate-x-[6.7%]" layout>
+        <AnimatePresence>
+          {order.map((animalId, idx) => {
+            const animal = animals.find((animal) => animal.name === animalId);
+            return animal ? (
+              <motion.div
+                key={animal.name}
+                className="w-full"
+                style={{
+                  transform: `translateX(${8 * idx}%)`,
+                }}
+                layout
+              >
+                <RankItem id={animal.name} vote={5} rank={idx + 1} />
+              </motion.div>
+            ) : null;
+          })}
+        </AnimatePresence>
+      </motion.div>
       <div className="bg-gradient-to-b from-background-100 to-transparent absolute w-full h-[30px] left-0 top-0"></div>
       <div className="bg-gradient-to-t from-background-100 to-transparent absolute w-full h-[30px] left-0 bottom-0"></div>
       <div className="bg-gradient-to-r from-background-100 to-transparent absolute w-[30px] h-full left-0 top-0"></div>

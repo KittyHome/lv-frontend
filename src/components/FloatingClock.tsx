@@ -4,15 +4,13 @@ import { CircularProgressbar } from "react-circular-progressbar";
 
 import { useAppContext } from "../hooks/useAppContext";
 
-const MAX_SECONDS = 3600;
-
 const FloatingClock = () => {
-  const [time, setTime] = useState<number>(MAX_SECONDS);
-  const { nextGameTime, updateNextGameTime } = useAppContext();
+  const [time, setTime] = useState<number>(0);
+  const { stage } = useAppContext();
 
   useEffect(() => {
     const timerID = setInterval(() => {
-      setTime((t) => (t <= 0 ? MAX_SECONDS : t - 1));
+      setTime((t) => (t <= 0 ? 0 : t - 1));
     }, 1000);
 
     return () => {
@@ -21,17 +19,18 @@ const FloatingClock = () => {
   }, []);
 
   useEffect(() => {
-    updateNextGameTime();
-  }, []);
-
-  useEffect(() => {
-    nextGameTime &&
+    stage &&
       setTime(
-        Math.floor((nextGameTime.getTime() - new Date().getTime()) / 1000)
+        Math.floor((stage.endedAt.getTime() - new Date().getTime()) / 1000)
       );
-  }, [nextGameTime]);
+  }, [stage]);
 
-  const progress = useMemo(() => (time / MAX_SECONDS) * 100, [time]);
+  const progress = useMemo(() => {
+    if (!stage) return 0;
+    const maxSeconds =
+      (stage.endedAt.getTime() - stage.startedAt.getTime()) / 1000;
+    return (time / maxSeconds) * 100;
+  }, [time, stage]);
 
   const screenConstraints = useMemo(() => {
     const screenWidth = window.innerWidth;

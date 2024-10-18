@@ -6,8 +6,8 @@ import AnimatedNumber from "../components/AnimatedNumber";
 import BCard from "../components/BCard/BCard";
 import GradientBackground from "../components/GradientBackground";
 import { useAppContext } from "../hooks/useAppContext";
-import { ANIMALS } from "../lib/constants";
 import GoldBG from "/images/gold_bg.webp";
+import VoteBox from "../components/VoteBox";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -29,21 +29,14 @@ const itemVariants = {
 };
 
 const CardBox = () => {
-  const { votes, trends } = useAppContext();
+  const { animals, selectedAnimal, setSelectedAnimal } = useAppContext();
   const [isSort, setIsSort] = useState(true);
 
   const sortedAnimals = useMemo(() => {
     return isSort
-      ? [...ANIMALS].sort((a, b) => (votes[a.name] > votes[b.name] ? -1 : 1))
-      : ANIMALS;
-  }, [isSort, votes]);
-
-  const maxTrendValue = Object.values(trends).reduce((max, trendArray) => {
-    const localMax = trendArray.reduce((localMax, current) => {
-      return current.secondary > localMax ? current.secondary : localMax;
-    }, 0);
-    return localMax > max ? localMax : max;
-  }, 0);
+      ? [...animals].sort((a, b) => (a.vote > b.vote ? -1 : 1))
+      : animals;
+  }, [isSort, animals]);
 
   return (
     <div>
@@ -54,21 +47,26 @@ const CardBox = () => {
         </div>
       </div>
       <motion.div
-        className="grid gap-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 w-full justify-items-center"
+        className="grid md:gap-2 gap-0 grid-cols-5 w-full justify-items-center"
         variants={containerVariants}
         initial="hidden"
         animate="show"
         layout
       >
         {sortedAnimals.map((animal) => (
-          <motion.div key={animal.name} variants={itemVariants} layout>
+          <motion.div
+            className="w-full"
+            key={animal.name}
+            variants={itemVariants}
+            layout
+          >
             <BCard
-              imgSrc={animal.aniAvatar}
+              imgSrc={animal.gifAvatarUrl}
               title={animal.name}
               description={animal.description}
-              vote={votes[animal.name]}
-              trend={trends[animal.name]}
-              max={maxTrendValue}
+              vote={animal.vote}
+              onClick={() => setSelectedAnimal(animal)}
+              isSelected={selectedAnimal?.id === animal.id}
             />
           </motion.div>
         ))}
@@ -78,26 +76,23 @@ const CardBox = () => {
 };
 
 const Dashboard = () => {
-  const { prizePool } = useAppContext();
-
+  const { stage } = useAppContext();
   return (
     <>
       <GradientBackground />
       <div className="container flex flex-col items-center p-2 gap-5 m-auto overflow-x-clip justify-center">
-        <div className="w-full flex flex-col gap-5 z-10 overflow-x-clip">
+        <div className="w-full flex flex-col gap-3 z-10 overflow-x-clip">
           <div className="relative flex flex-col items-center">
-            <h2 className="text-2xl font-bold select-none mb-3">
-              Next Prize Pool
-            </h2>
+            <h2 className="text-2xl font-bold select-none mb-3">Prize Pool</h2>
             <AnimatedNumber
-              target={prizePool}
+              target={stage?.prizePool || 0}
               tooltip="This is the current prize pool! Buy a ticket now for your chance to win big!"
               symbol="$"
               size="lg"
               className="nabla-regular relative z-10 mb-5"
             />
             <motion.div
-              className="absolute -top-[60px] opacity-20 blur-sm z-0 pointer-events-none"
+              className="absolute -top-[40px] opacity-20 blur-sm z-0 pointer-events-none"
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
             >
@@ -105,6 +100,7 @@ const Dashboard = () => {
             </motion.div>
           </div>
           <CardBox />
+          <VoteBox />
           <div className="p-4 bg-background-200 rounded-lg shadow-md border border-white/10">
             <h3 className="text-xl font-bold mb-2 text-center">
               The Enchanted Kingdom of Whiskerwisp

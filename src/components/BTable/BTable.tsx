@@ -23,7 +23,13 @@ function BTable({ columns, rows }: BTableProps) {
     <div className="flex flex-col overflow-clip bg-background-200 p-3 min-w-[500px] rounded-b-lg">
       <TableHead columns={columns} />
       <div>
-        <TableBody columns={columns} rows={rows} />
+        {rows.length > 0 ? (
+          <TableBody columns={columns} rows={rows} />
+        ) : (
+          <div className="p-5 pb-2 w-full flex justify-center items-center">
+            No data available
+          </div>
+        )}
       </div>
     </div>
   );

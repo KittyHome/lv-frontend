@@ -3,35 +3,33 @@ import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 
 import { useAppContext } from "../hooks/useAppContext";
-import { useAuth } from "../hooks/useAuth";
 import SpinModal from "./SpinModal";
 import Spin from "/images/lucky-spin.png";
 
 const FloatingSpinButton: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { user } = useAuth();
-  const { openAuthModal } = useAppContext();
+  const { spin, openAuthModal } = useAppContext();
 
   const closeModal = useCallback(() => {
     setIsOpen(false);
   }, []);
 
   const handleClick = useCallback(() => {
-    if (user?.isSpinAvailable) {
+    if (spin) {
       setIsOpen(true);
     } else {
       toast.info("Please log in to purchase a ticket.");
       openAuthModal();
     }
-  }, [user, openAuthModal]);
+  }, [spin, openAuthModal]);
 
   useEffect(() => {
-    user?.isSpinAvailable && setIsOpen(true);
-  }, [user?.isSpinAvailable]);
+    spin && setIsOpen(true);
+  }, [spin]);
 
   return (
     <>
-      {user?.isSpinAvailable && (
+      {spin && (
         <motion.img
           onClick={handleClick}
           src={Spin}

@@ -12,7 +12,7 @@ const MainLayout = () => {
     <>
       <Banner content="Sign-up now to get 100+ free votes!" />
       <Topbar />
-      <div className="z-0 flex-grow">
+      <div className="z-0 flex-grow max-w-[1284px] mx-auto w-full">
         <Outlet />
       </div>
       <Tooltip

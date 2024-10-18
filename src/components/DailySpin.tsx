@@ -18,7 +18,7 @@ interface DailySpinProps {
     amount: number;
   }[];
   target?: React.MutableRefObject<number | undefined>;
-  onSpin: () => void;
+  onSpin?: () => void;
   onCompleted: () => void;
 }
 
@@ -30,7 +30,7 @@ function DailySpin({ presents, target, onSpin, onCompleted }: DailySpinProps) {
   const [angle, setAngle] = useState(0);
 
   const handleTapClick = useCallback(() => {
-    onSpin();
+    onSpin && onSpin();
 
     speed.current = 10;
     angleTimerID.current = setInterval(() => {

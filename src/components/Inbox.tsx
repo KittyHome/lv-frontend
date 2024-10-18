@@ -1,16 +1,15 @@
 import clsx from "clsx";
+import { motion } from "framer-motion";
 import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
+import { IoCheckmarkSharp } from "react-icons/io5";
+import { MdDeleteOutline } from "react-icons/md";
 
 import PopupPanel from "../common/PopupPanel";
 import Switch from "../common/Switch";
 import { useAppContext } from "../hooks/useAppContext";
-import { deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { firestore } from "../lib/firebase/firebase";
 import { useAuth } from "../hooks/useAuth";
-import { motion } from "framer-motion";
-import { IoCheckmarkSharp } from "react-icons/io5";
-import { MdDeleteOutline } from "react-icons/md";
+import { updateNotification } from "../lib/supabase/utils";
 
 interface NotificationProps {
   content: string;
@@ -86,32 +85,16 @@ const Inbox = () => {
 
   const handleRead = useCallback(
     (id: string) => () => {
-      if (!user?.uid) return;
-      const notificationRef = doc(
-        firestore,
-        "users",
-        user.uid,
-        "notifications",
-        id
-      );
-      updateDoc(notificationRef, { isRead: true });
+      user?.id && updateNotification(user.id, id, { isRead: true });
     },
-    [user?.uid]
+    [user?.id]
   );
 
   const handleDelete = useCallback(
     (id: string) => () => {
-      if (!user?.uid) return;
-      const notificationRef = doc(
-        firestore,
-        "users",
-        user.uid,
-        "notifications",
-        id
-      );
-      deleteDoc(notificationRef);
+      user?.id && updateNotification(user.id, id, { isDeleted: true });
     },
-    [user?.uid]
+    [user?.id]
   );
 
   const filteredNotifications = notifications.filter((notification) =>

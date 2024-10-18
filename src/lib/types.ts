@@ -1,4 +1,4 @@
-import { User as FirebaseUser } from "firebase/auth";
+import { User as SupabaseUser } from "@supabase/supabase-js";
 
 export type AnimalId =
   | "Whiskerwisp"
@@ -15,19 +15,21 @@ export interface ButtonStatus {
 }
 
 export interface Animal {
-  aniAvatar: string;
-  avatar: string;
+  id: string;
+  gifAvatarUrl: string;
+  staticAvatarUrl: string;
   name: AnimalId;
   description: string;
+  vote: number;
 }
 
-export interface User extends FirebaseUser {
+export interface User extends SupabaseUser {
   username?: string;
   money: number;
   votes: number;
   isAdvancedUser?: boolean;
-  isSpinAvailable?: boolean;
-  padStates?: ButtonStatus[];
+  withdrawChance: number;
+  voteDisabledDate?: Date | null;
 }
 
 export type Ticket = {
@@ -48,4 +50,20 @@ export type Notification = {
   isNotified: boolean;
   content: string;
   createdAt: Date;
+};
+
+export type OrderDetail = {
+  key: AnimalId;
+  rank: number;
+};
+
+export type Stage = {
+  id: string;
+  prizePool: number;
+  endedAt: Date;
+  startedAt: Date;
+  prizeForGold?: number;
+  prizeForSilver?: number;
+  prizeForBronze?: number;
+  stageResult?: AnimalId[];
 };
