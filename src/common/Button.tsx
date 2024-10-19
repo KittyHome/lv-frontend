@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import React, { ReactNode } from "react";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "ghost";
   className?: string;
   children: ReactNode;
   badge?: string | number;
@@ -15,6 +15,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const variantClasses =
       variant === "primary"
         ? "bg-primary-gradient hover:shadow-glow-primary"
+        : variant === "ghost"
+        ? ""
         : "bg-text-100/10 hover:bg-text-100/20";
 
     return (

@@ -134,7 +134,7 @@ const VoteBox = () => {
       {selectedAnimal && (
         <div className="flex gap-3 mt-2 sm:flex-row flex-col">
           <Button
-            variant="secondary"
+            variant="ghost"
             className={clsx(
               "w-full",
               isButtonDisabled
