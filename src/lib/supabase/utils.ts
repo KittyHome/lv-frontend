@@ -20,7 +20,6 @@ export async function doesEmailExist(email: string) {
     console.error("Error checking email:", error);
     return false;
   }
-
   return data;
 }
 

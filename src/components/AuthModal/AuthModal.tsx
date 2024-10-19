@@ -1,5 +1,4 @@
-import { throttle } from "lodash";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { toast } from "react-toastify";
 
@@ -24,19 +23,19 @@ const AuthModal = () => {
 
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [isEmailExist, setIsEmailExist] = useState(false);
+  const [isEmailExist, setIsEmailExist] = useState<boolean>();
 
-  useEffect(() => {
-    const checkEmailExists = throttle(async () => {
-      const data = await doesEmailExist(email);
-      setIsEmailExist(data);
-    }, 200);
+  const handleEmailBlur = useCallback(() => {
+    const checkEmailExists = async () => {
+      try {
+        const data = await doesEmailExist(email);
+        setIsEmailExist(data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
     isValidEmail(email) && checkEmailExists();
-
-    return () => {
-      checkEmailExists.cancel();
-    };
   }, [email]);
 
   const validateForm = () => {
@@ -60,7 +59,7 @@ const AuthModal = () => {
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
+    if (!validateForm() || isEmailExist === undefined) return;
 
     setIsLoading(true);
     try {
@@ -123,6 +122,7 @@ const AuthModal = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                onBlur={handleEmailBlur}
               />
               {emailError && (
                 <p className="text-primary-100 text-xs italic ml-1">

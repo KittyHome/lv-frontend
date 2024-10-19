@@ -25,29 +25,30 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [user, setUser] = useState<User>();
 
   useEffect(() => {
+    const handleAuthChange = async (_event: string, session: any) => {
+      const user = session?.user;
+      if (user) {
+        const fetchedUserData = await getUserDataById(user.id);
+        setUser({
+          ...(user as User),
+          ...fetchedUserData,
+          money: fetchedUserData?.money ?? 0,
+          votes: fetchedUserData?.votes ?? 0,
+        });
+      } else {
+        setUser(undefined);
+      }
+    };
+
     const {
       data: { subscription: authListener },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      const user = session?.user;
-      if (user) setUser({ ...(user as User), money: 0, votes: 0 });
-      else setUser(undefined);
-    });
+    } = supabase.auth.onAuthStateChange(handleAuthChange);
 
     return () => authListener.unsubscribe();
   }, []);
 
   useEffect(() => {
     if (!user?.id) return;
-
-    const updateUserData = async () => {
-      const fetchedUserData = await getUserDataById(user.id);
-      fetchedUserData &&
-        setUser((currentUser) => ({
-          ...(currentUser as User),
-          ...fetchedUserData,
-        }));
-    };
-    updateUserData();
 
     const userRealtimeChannel = createUserRealtimeChannel(
       user.id,
