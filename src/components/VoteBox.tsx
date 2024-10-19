@@ -140,8 +140,8 @@ const VoteBox = () => {
               isButtonDisabled
                 ? "cursor-not-allowed opacity-50"
                 : currentValue > 0
-                ? "bg-green-500 hover:bg-green-400"
-                : "bg-red-500 hover:bg-red-400"
+                ? "!bg-green-500 hover:!bg-green-400"
+                : "!bg-red-500 hover:!bg-red-400"
             )}
             onClick={handleClick}
             disabled={isButtonDisabled}
