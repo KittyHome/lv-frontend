@@ -138,7 +138,7 @@ const VoteBox = () => {
             className={clsx(
               "w-full",
               isButtonDisabled
-                ? "cursor-not-allowed opacity-50"
+                ? "cursor-not-allowed opacity-50 bg-gray-500"
                 : currentValue > 0
                 ? "!bg-green-500 hover:!bg-green-400"
                 : "!bg-red-500 hover:!bg-red-400"

@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Switch from "../common/Switch";
 import AnimatedNumber from "../components/AnimatedNumber";
 import BCard from "../components/BCard/BCard";
 import GradientBackground from "../components/GradientBackground";
+import VoteBox from "../components/VoteBox";
 import { useAppContext } from "../hooks/useAppContext";
 import GoldBG from "/images/gold_bg.webp";
-import VoteBox from "../components/VoteBox";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -77,6 +77,11 @@ const CardBox = () => {
 
 const Dashboard = () => {
   const { stage } = useAppContext();
+
+  useEffect(() => {
+    document.title = "Lucky Village | Home";
+  }, []);
+
   return (
     <>
       <GradientBackground />

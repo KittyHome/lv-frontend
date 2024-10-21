@@ -14,7 +14,7 @@ import {
 import { User } from "../lib/types";
 
 interface AuthContextProps {
-  user?: User;
+  user?: User | null;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -22,7 +22,7 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<User | null>();
 
   useEffect(() => {
     const handleAuthChange = async (_event: string, session: any) => {
@@ -36,7 +36,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
           votes: fetchedUserData?.votes ?? 0,
         });
       } else {
-        setUser(undefined);
+        setUser(null);
       }
     };
 

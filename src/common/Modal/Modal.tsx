@@ -27,22 +27,21 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className={`fixed w-screen h-screen left-0 top-0 z-50 flex sm:items-center items-end justify-center ${
+          className={`fixed w-screen h-screen left-0 top-0 z-50 ${
             backdrop ? "backdrop-blur" : ""
           }`}
           variants={backdropVariants}
           initial="hidden"
           animate="visible"
           exit="hidden"
-          onClick={onClose}
         >
           <motion.div
-            className="w-full"
+            className="w-full h-full flex justify-center sm:items-center items-end"
             variants={modalVariants}
             initial="hidden"
             animate="visible"
             exit="hidden"
-            onClick={(e) => e.stopPropagation()}
+            onClick={onClose}
           >
             {children}
           </motion.div>

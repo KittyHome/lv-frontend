@@ -17,6 +17,7 @@ import MiniLogo from "/favicon.png";
 import Logo from "/logo.png";
 import ActiveTicketBox from "./ActiveTicketBox";
 import { signOut } from "../lib/supabase/auth";
+import { GrTransaction } from "react-icons/gr";
 
 const MenuButton = ({
   className,
@@ -78,6 +79,10 @@ const Topbar = () => {
 
   const handleAccount = useCallback(() => {
     navigate("/account");
+  }, [navigate]);
+
+  const handleTransactions = useCallback(() => {
+    navigate("/transactions");
   }, [navigate]);
 
   const handleSignout = useCallback(() => {
@@ -183,18 +188,15 @@ const Topbar = () => {
                     </div>
                   </div>
                   <div className="flex-1">
+                    <MenuButton onClick={handleTransactions}>
+                      <GrTransaction />
+                      Transactions
+                    </MenuButton>
                     <MenuButton onClick={handleAccount}>
                       <IoSettings />
                       Setting
                     </MenuButton>
-                    <MenuButton onClick={handleAccount}>
-                      <HiTicket />
-                      Tickets
-                    </MenuButton>
-                    <MenuButton
-                      className="bg-primary-100 text-text-100 hover:bg-primary-200"
-                      onClick={handleSignout}
-                    >
+                    <MenuButton onClick={handleSignout}>
                       <FaSignOutAlt /> Sign out
                     </MenuButton>
                   </div>

@@ -6,11 +6,15 @@ import Banner from "../components/Banner";
 import FloatingClock from "../components/FloatingClock";
 import Footer from "../components/Footer";
 import Topbar from "../components/Topbar";
+import { useAuth } from "../hooks/useAuth";
 
 const MainLayout = () => {
+  const { user } = useAuth();
   return (
     <>
-      <Banner content="Sign-up now to get 100+ free votes!" />
+      {!user && (
+        <Banner content="Sign-up now to start winning bets and earning money!" />
+      )}
       <Topbar />
       <div className="z-0 flex-grow max-w-[1284px] mx-auto w-full">
         <Outlet />

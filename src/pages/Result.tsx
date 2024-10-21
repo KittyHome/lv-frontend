@@ -71,6 +71,10 @@ const Result = () => {
   const [rows, setRows] = useState<TableRow[]>([]);
 
   useEffect(() => {
+    document.title = "Lucky Village | Result";
+  }, []);
+
+  useEffect(() => {
     getAllStageData().then((allStages) => allStages && setStages(allStages));
   }, []);
 
@@ -111,7 +115,7 @@ const Result = () => {
 
   return (
     <PageWrapper title="Discover the results for any game here">
-      <div className="relative w-full">
+      <div className="relative w-full mt-3">
         <div className="mb-4">
           <Dropdown
             value={selectedStage?.id || null}

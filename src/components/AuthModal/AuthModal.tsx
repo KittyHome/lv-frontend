@@ -92,7 +92,10 @@ const AuthModal = () => {
 
   return (
     <Modal isOpen={isOpenAuthModal} onClose={closeAuthModal}>
-      <div className="mx-auto p-1 max-w-[540px]">
+      <div
+        className="p-1 max-w-[540px] grow"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="bg-background-100 sm:px-5 px-2 py-5 pt-10 rounded-lg shadow border-secondary-100 w-full">
           <div className="w-full flex justify-center">
             <img src={Logo} alt="Lucky Village Logo" />

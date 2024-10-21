@@ -84,7 +84,10 @@ const TicketModal: React.FC<TicketModalProps> = ({ isOpen, closeModal }) => {
 
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
-      <div className="mx-auto max-w-[540px] p-1">
+      <div
+        className="max-w-[540px] p-1 grow"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="bg-background-100 sm:px-5 px-2 py-5 rounded-lg shadow border-secondary-100 w-full">
           <p className="ml-2 mb-1 font-bold">
             Select your desired order by dragging
@@ -131,8 +134,7 @@ const TicketModal: React.FC<TicketModalProps> = ({ isOpen, closeModal }) => {
             )}
             {myTickets.length >= MAX_COUNT_OF_ACTIVE_TICKETS && (
               <p className="text-primary-100 italic text-sm mt-1">
-                You have reached the maximum limit of active tickets. Please use
-                or manage your existing tickets before acquiring more.
+                You have reached the maximum limit of active tickets.
               </p>
             )}
             {(!user?.money || user.money < TICKET_PRICE) && (
@@ -144,7 +146,7 @@ const TicketModal: React.FC<TicketModalProps> = ({ isOpen, closeModal }) => {
           </div>
           <div>
             <p className="ml-2 mb-2 font-bold">Active tickets</p>
-            <div className="bg-background-200 rounded-lg p-1">
+            <div className="rounded-lg border border-white/5 p-0.5">
               {myTickets.length > 0 ? (
                 <div className="flex flex-col gap-1">
                   {myTickets

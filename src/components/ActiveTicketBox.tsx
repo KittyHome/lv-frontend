@@ -17,19 +17,19 @@ export const ActiveTicket: React.FC<ActiveTicketProps> = ({
   const { order, createdAt } = ticket;
 
   return (
-    <div className="bg-background-100 hover:bg-background-200 cursor-pointer rounded-lg border border-text-100/10">
+    <div className="hover:bg-background-200 cursor-pointer rounded-lg">
       <div
         className={clsx(
-          "p-2 px-3 text-sm",
+          "text-sm p-1",
           size === "md" ? "flex justify-between items-center" : "flex flex-col"
         )}
       >
         {size === "sm" && (
-          <p className="text-right text-sm text-gray-500">
+          <p className="text-right text-sm text-gray-500 mb-1">
             {moment(createdAt).fromNow()}
           </p>
         )}
-        <div className={clsx("gap-2 mt-1 flex")}>
+        <div className={clsx("gap-2 flex justify-between")}>
           {order.map((animalName, index) => {
             const animal = animals.find((a) => a.name === animalName);
             return (
@@ -61,9 +61,6 @@ const ActiveTicketBox = () => {
     <PopupPanel className="relative w-[300px] flex flex-col">
       <div className="w-full bg-primary-100 p-2 h-[fit-content] flex justify-between">
         <p className="text-sm font-bold">Active tickets</p>
-        <div className="flex items-center gap-2 text-sm">
-          <button className="hover:opacity-80">Show all</button>
-        </div>
       </div>
       <div className="flex flex-col overflow-y-auto max-h-[300px] gap-1 p-1">
         {myTickets.length > 0 ? (

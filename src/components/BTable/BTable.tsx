@@ -20,7 +20,7 @@ interface BTableProps {
 
 function BTable({ columns, rows }: BTableProps) {
   return (
-    <div className="flex flex-col overflow-clip bg-background-200 p-3 min-w-[500px] rounded-b-lg">
+    <div className="flex flex-col overflow-clip bg-background-200 p-3 min-w-[1000px] rounded-b-lg">
       <TableHead columns={columns} />
       <div>
         {rows.length > 0 ? (

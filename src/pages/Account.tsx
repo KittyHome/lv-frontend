@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { MdNotifications } from "react-icons/md";
 import { HiWallet, HiUserCircle } from "react-icons/hi2";
 import { BsInfoCircle } from "react-icons/bs";
@@ -6,9 +7,28 @@ import Button from "../common/Button";
 import Input from "../common/Input";
 import { useAuth } from "../hooks/useAuth";
 import PageWrapper from "../components/PageWrapper";
+import Dropdown from "../common/Dropdown";
+
+type Network = "bep20" | "trc20";
+
+const networkOptions: {
+  label: string;
+  value: Network;
+}[] = [
+  {
+    label: "BEP20",
+    value: "bep20",
+  },
+  { label: "TRC20", value: "trc20" },
+];
 
 const Account = () => {
   const { user } = useAuth();
+  const [selectedNetwork, setSelectedNetwork] = useState<Network>("bep20");
+
+  useEffect(() => {
+    document.title = "Lucky Village | Account";
+  }, []);
 
   return (
     <PageWrapper title="Manage your account settings and preferences">
@@ -74,27 +94,58 @@ const Account = () => {
         <div className="flex gap-3 border border-background-100 bg-background-200 rounded-lg p-3 flex-col">
           <h3 className="font-bold text-xl flex items-center gap-2">
             <HiWallet />
-            Wallet
+            Payment
           </h3>
-          <div className="flex justify-center items-center md:flex-row flex-col gap-5">
-            <div className="flex flex-col items-center justify-center">
-              <p className="mb-3">
-                You can deposit money by sending crypto to below address
-              </p>
-              <img
-                className="w-[200px] h-[200px] bg-white p-2 rounded-lg"
-                src="https://www.freepnglogos.com/uploads/qr-code-png/qr-code-ios-will-enable-the-iphone-camera-app-read-codes-29.png"
-              />
-              <p className="text-text-100/50 py-2">
-                0x1234567890abcdef1234567890abcdef12345678
-              </p>
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-3 bg-background-100 rounded-lg p-3">
+              <div>
+                <h3 className="ml-1 font-bold">Add Funds</h3>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="ml-2 text-sm font-bold">Amount (USD)</label>
+                <Input placeholder="Enter amount in USD here" />
+              </div>
+              <Button className="w-full mx">Charge with Cryptomus</Button>
             </div>
-            <div className="mt-10 flex gap-3 w-full max-w-[500px] md:flex-row flex-col">
-              <Input
-                className="flex-1 !bg-background-100"
-                placeholder="Enter your withdraw address here"
-              />
-              <Button>Withdraw</Button>
+            <div className="flex flex-col gap-3 bg-background-100 rounded-lg p-3">
+              <div className="flex items-start justify-between px-1">
+                <div>
+                  <h3 className="font-bold">Withdraw</h3>
+                  <p className="text-sm opacity-50">
+                    You are allowed to withdraw up to 90% of your available
+                    balance per request. <br />
+                    Please note that processing withdrawals may take up to 24
+                    hours due to high demand.
+                  </p>
+                </div>
+              </div>
+              {user && user.withdrawChance > 0 ? (
+                <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-2">
+                    <label className="ml-2 text-sm font-bold">
+                      Amount (USD)
+                    </label>
+                    <Input placeholder="Enter amount in USD here" />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="ml-2 text-sm font-bold">Network</label>
+                    <Dropdown
+                      value={selectedNetwork}
+                      options={networkOptions}
+                      onChange={(value) => setSelectedNetwork(value as Network)}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="ml-2 text-sm font-bold">Address</label>
+                    <Input placeholder="Enter your USDT address here" />
+                  </div>
+                  <Button className="w-full mx">Send withdraw request</Button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center p-5 opacity-70">
+                  You have reached your withdrawal limit
+                </div>
+              )}
             </div>
           </div>
         </div>

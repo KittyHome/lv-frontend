@@ -1,27 +1,21 @@
+import { useEffect } from "react";
 import Button from "../common/Button";
-import Input from "../common/Input";
-import Textarea from "../common/Textarea";
 import PageWrapper from "../components/PageWrapper";
 
 const ContactUs = () => {
+  useEffect(() => {
+    document.title = "Lucky Village | Contact";
+  }, []);
+
   return (
     <PageWrapper title="Get in touch with us for any inquiries or support">
       <div className="gap-3 bg-background-200 p-3 w-full rounded-lg flex flex-col mt-3">
-        <div className="w-full">
-          <label className="ml-2 text-sm font-bold">Email</label>
-          <Input
-            className="w-full !bg-background-100"
-            placeholder="Enter your email here"
-          />
-        </div>
-        <div className="w-full">
-          <label className="ml-2 text-sm font-bold">Message</label>
-          <Textarea
-            className="w-full min-h-[300px] !bg-background-100"
-            placeholder="Enter your message here"
-          />
-        </div>
-        <Button>Submit</Button>
+        Join our Community
+        <Button
+          onClick={() => window.open("https://discord.gg/3XSGag74Aq", "_blank")}
+        >
+          Join our Discord
+        </Button>
       </div>
       <div className="bg-background-200 p-3 rounded-lg w-full flex lg:flex-row flex-col gap-5 mt-5">
         <div className="flex flex-col gap-3">
@@ -29,14 +23,9 @@ const ContactUs = () => {
             <p className="text-lg font-bold">Address</p>
             <p>643 West 30th St, Los Angeles, CA 90007</p>
           </div>
-
           <div>
             <p className="text-lg font-bold">Email</p>
-            <p>contact@luckyvillage.org</p>
-          </div>
-          <div>
-            <p className="text-lg font-bold">Phone</p>
-            <p>+1 804 491 9593</p>
+            <p>info@kittyhome.org</p>
           </div>
         </div>
 
