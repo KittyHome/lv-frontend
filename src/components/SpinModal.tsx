@@ -55,7 +55,10 @@ const SpinModal: React.FC<SpinModalProps> = ({ isOpen, closeModal }) => {
 
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
-      <div className="relative bg-gradient-to-b from-primary-200/90 to-background-100 rounded-lg max-w-[26rem] shadow-lg mx-auto">
+      <div
+        className="relative bg-gradient-to-b from-primary-200/90 to-background-100 rounded-lg max-w-[26rem] shadow-lg mx-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="py-8">
           <h3 className="text-3xl text-center font-bold">Spin to Win Big!</h3>
         </div>
