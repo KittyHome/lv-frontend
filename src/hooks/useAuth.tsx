@@ -28,7 +28,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     const handleAuthChange = async (_event: string, session: any) => {
       const user = session?.user as SupabaseUser | undefined;
       user
-        ? setUser({ ...user, withdrawChance: 0, money: 0, votes: 0 })
+        ? setUser((prvUser) => ({
+            ...user,
+            withdrawChance: 0,
+            money: 0,
+            votes: 0,
+            ...(prvUser || {}),
+          }))
         : setUser(null);
     };
 
