@@ -23,6 +23,8 @@ export interface Animal {
   vote: number;
 }
 
+export type { SupabaseUser };
+
 export interface User extends SupabaseUser {
   username?: string;
   money: number;

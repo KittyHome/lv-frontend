@@ -11,7 +11,7 @@ import {
   createUserRealtimeChannel,
   getUserDataById,
 } from "../lib/supabase/utils";
-import { User } from "../lib/types";
+import { SupabaseUser, User } from "../lib/types";
 
 interface AuthContextProps {
   user?: User | null;
@@ -26,18 +26,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const handleAuthChange = async (_event: string, session: any) => {
-      const user = session?.user;
-      if (user) {
-        const fetchedUserData = await getUserDataById(user.id);
-        setUser({
-          ...(user as User),
-          ...fetchedUserData,
-          money: fetchedUserData?.money ?? 0,
-          votes: fetchedUserData?.votes ?? 0,
-        });
-      } else {
-        setUser(null);
-      }
+      const user = session?.user as SupabaseUser | undefined;
+      user
+        ? setUser({ ...user, withdrawChance: 0, money: 0, votes: 0 })
+        : setUser(null);
     };
 
     const {
@@ -49,6 +41,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     if (!user?.id) return;
+
+    getUserDataById(user.id).then(
+      (fetchedUserData) =>
+        fetchedUserData &&
+        setUser((prvUser) => ({ ...(prvUser as User), ...fetchedUserData }))
+    );
 
     const userRealtimeChannel = createUserRealtimeChannel(
       user.id,

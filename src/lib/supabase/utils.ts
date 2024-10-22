@@ -205,6 +205,7 @@ export async function getStageData() {
 
     return stageData;
   } catch (err) {
+    console.error(err);
     return null;
   }
 }
