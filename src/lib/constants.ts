@@ -9,6 +9,8 @@ import StaticAnimal2 from "/images/animal2.jpg";
 import StaticAnimal3 from "/images/animal3.jpg";
 import StaticAnimal4 from "/images/animal4.jpg";
 import StaticAnimal5 from "/images/animal5.jpg";
+import Audio1 from "/audio/1.mp3";
+import Audio2 from "/audio/2.mp3";
 
 export const DEFAULT_ANIMALS: Animal[] = [
   {
@@ -78,3 +80,5 @@ export const PAD_BUTTONS: ButtonStatus[] = [
 
 export const MAX_COUNT_OF_ACTIVE_TICKETS = 5;
 export const TICKET_PRICE = 20;
+
+export const DEFAULT_AUDIOS = [Audio1, Audio2];
