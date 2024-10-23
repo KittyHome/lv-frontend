@@ -8,9 +8,9 @@ const GradientBackground = () => {
     if (canvasRef.current) {
       const gradient = new Gradient({
         canvas: canvasRef.current,
-        colors: ["#161A25", "#090B12", "#161A25", "#090B12"],
-        amplitude: 320,
-        density: [0.01, 0.16],
+        colors: ["#011621", "#090B12", "#310663", "#090B12"],
+        amplitude: 50,
+        density: [0.1, 0.1],
         angle: 0,
       });
 

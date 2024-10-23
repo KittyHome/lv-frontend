@@ -41,7 +41,7 @@ const CardBox = () => {
   return (
     <div>
       <div className="flex justify-center -mt-3">
-        <div className="flex gap-2 items-center bg-background-200 px-3 py-2 mb-2 rounded-lg w-fit border-dashed border border-primary-200/30">
+        <div className="flex gap-2 items-center bg-background-200/50 backdrop-blur px-3 py-2 mb-2 rounded-lg w-fit border-dashed border border-primary-200/30">
           Sort by rank
           <Switch checked={isSort} onChange={setIsSort} />
         </div>
@@ -111,7 +111,7 @@ const Dashboard = () => {
           </div>
           <CardBox />
           <VoteBox />
-          <div className="p-4 bg-background-200 rounded-lg shadow-md border border-white/10">
+          <div className="p-4 bg-gradient-to-b from-background-200 to-transparent rounded-lg border border-white/10 backdrop-blur-sm rounded-b-none border-b-0 pb-10">
             {selectedAnimal ? (
               <>
                 <h3 className="text-xl font-bold mb-2 text-center">
