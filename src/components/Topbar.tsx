@@ -92,7 +92,7 @@ const Topbar = () => {
 
   return (
     <div className="sticky top-0 z-50 p-2">
-      <div className="h-[60px] flex items-center justify-between px-3 backdrop-blur rounded-lg shadow-lg border border-text-200/10">
+      <div className="container mx-auto h-[60px] max-w-[1284px] flex items-center justify-between px-3 backdrop-blur rounded-lg shadow-lg border border-text-200/10">
         <div className="md:flex hidden items-center gap-5">
           <img
             src={Logo}

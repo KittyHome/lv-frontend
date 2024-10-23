@@ -58,7 +58,10 @@ const FloatingClock = () => {
   }, []);
 
   const handlePrevious = useCallback(() => {
-    setAudioPlayIndex((prvIndex) => (prvIndex - 1) % DEFAULT_AUDIOS.length);
+    setAudioPlayIndex(
+      (prvIndex) =>
+        (DEFAULT_AUDIOS.length + prvIndex - 1) % DEFAULT_AUDIOS.length
+    );
   }, []);
 
   useEffect(() => {
