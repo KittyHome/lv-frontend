@@ -63,9 +63,14 @@ const CardBox = () => {
             <BCard
               imgSrc={animal.gifAvatarUrl}
               title={animal.name}
-              description={animal.description}
               vote={animal.vote}
-              onClick={() => setSelectedAnimal(animal)}
+              onClick={() =>
+                setSelectedAnimal(
+                  !selectedAnimal || selectedAnimal.id !== animal.id
+                    ? animal
+                    : undefined
+                )
+              }
               isSelected={selectedAnimal?.id === animal.id}
             />
           </motion.div>
@@ -76,7 +81,7 @@ const CardBox = () => {
 };
 
 const Dashboard = () => {
-  const { stage } = useAppContext();
+  const { stage, selectedAnimal } = useAppContext();
 
   useEffect(() => {
     document.title = "Lucky Village | Home";
@@ -107,35 +112,47 @@ const Dashboard = () => {
           <CardBox />
           <VoteBox />
           <div className="p-4 bg-background-200 rounded-lg shadow-md border border-white/10">
-            <h3 className="text-xl font-bold mb-2 text-center">
-              The Enchanted Kingdom of Whiskerwisp
-            </h3>
-            <p className="mb-4 opacity-60">
-              In a realm where magic dances on the breeze and the sun sets in a
-              symphony of colors, lies the Enchanted Kingdom of Whiskerwisp.
-              This mystical land is ruled by five legendary animals, each
-              shrouded in mystery and wonder. Whiskerwisp, the ethereal feline,
-              glides through the mist with an elegance that defies the laws of
-              nature. Flickerdoodle, a fiery spirit, blazes trails of light as
-              it leaps through the air. MystiPurr, the guardian of the cosmos,
-              holds the secrets of the universe in its starry gaze. DandyPounce,
-              a vibrant burst of energy, brings life and joy to every corner of
-              the kingdom. And Puzzlebounce, the curious wanderer, explores the
-              world with a kaleidoscope of colors and endless curiosity.
-            </p>
-            <p className="mb-4 opacity-60">
-              Once a year, the kingdom hosts a grand spectacle where the bravest
-              souls gather to place their bets on which of these majestic
-              creatures will claim the throne. This is not merely a game of
-              chance, but a celebration of courage, wisdom, and the indomitable
-              spirit of Whiskerwisp.
-            </p>
-            <p className="font-bold opacity-60">
-              Dare to join the adventure and cast your vote! Will you choose the
-              mystical Whiskerwisp, the blazing Flickerdoodle, or the enigmatic
-              MystiPurr? Place your bets now and become a part of this legendary
-              tale!
-            </p>
+            {selectedAnimal ? (
+              <>
+                <h3 className="text-xl font-bold mb-2 text-center">
+                  {selectedAnimal.name}
+                </h3>
+                <p className="mb-4 opacity-60">{selectedAnimal.description}</p>
+              </>
+            ) : (
+              <>
+                <h3 className="text-xl font-bold mb-2 text-center">
+                  The Enchanted Kingdom of Whiskerwisp
+                </h3>
+                <p className="mb-4 opacity-60">
+                  In a realm where magic dances on the breeze and the sun sets
+                  in a symphony of colors, lies the Enchanted Kingdom of
+                  Whiskerwisp. This mystical land is ruled by five legendary
+                  animals, each shrouded in mystery and wonder. Whiskerwisp, the
+                  ethereal feline, glides through the mist with an elegance that
+                  defies the laws of nature. Flickerdoodle, a fiery spirit,
+                  blazes trails of light as it leaps through the air. MystiPurr,
+                  the guardian of the cosmos, holds the secrets of the universe
+                  in its starry gaze. DandyPounce, a vibrant burst of energy,
+                  brings life and joy to every corner of the kingdom. And
+                  Puzzlebounce, the curious wanderer, explores the world with a
+                  kaleidoscope of colors and endless curiosity.
+                </p>
+                <p className="mb-4 opacity-60">
+                  Once a year, the kingdom hosts a grand spectacle where the
+                  bravest souls gather to place their bets on which of these
+                  majestic creatures will claim the throne. This is not merely a
+                  game of chance, but a celebration of courage, wisdom, and the
+                  indomitable spirit of Whiskerwisp.
+                </p>
+                <p className="font-bold opacity-60">
+                  Dare to join the adventure and cast your vote! Will you choose
+                  the mystical Whiskerwisp, the blazing Flickerdoodle, or the
+                  enigmatic MystiPurr? Place your bets now and become a part of
+                  this legendary tale!
+                </p>
+              </>
+            )}
           </div>
         </div>
       </div>

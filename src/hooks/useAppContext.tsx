@@ -41,7 +41,7 @@ interface AppContextProps {
   myTickets: Ticket[];
   notifications: Notification[];
   selectedAnimal?: Animal;
-  setSelectedAnimal: (value: Animal) => void;
+  setSelectedAnimal: (value?: Animal) => void;
   stage?: Stage;
   spin?: SpinItem;
 }

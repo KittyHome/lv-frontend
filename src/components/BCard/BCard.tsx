@@ -6,7 +6,6 @@ import { AnimalId } from "../../lib/types";
 interface BCardProps {
   imgSrc: string;
   title: AnimalId;
-  description: string;
   vote: number;
   onClick: () => void;
   isSelected: boolean;
@@ -15,7 +14,6 @@ interface BCardProps {
 const BCard: React.FC<BCardProps> = ({
   imgSrc,
   title,
-  description,
   vote,
   onClick,
   isSelected,
@@ -40,9 +38,10 @@ const BCard: React.FC<BCardProps> = ({
               whileHover={{ opacity: 1 }}
               whileTap={{ opacity: 1 }}
             >
-              <div className="flex flex-col overflow-y-auto h-full w-full md:px-3 md:py-1 xl:p-1 px-1">
-                <div className="lg:text-xl text-[12px] font-bold">{title}</div>
-                <div className="lg:text-sm text-[10px]">{description}</div>
+              <div className="flex items-center justify-center h-full w-full md:px-3 md:py-1 xl:p-1 px-1">
+                <p className="lg:text-xl text-[12px] font-bold break-all w-full text-center">
+                  {title}
+                </p>
               </div>
             </motion.div>
             <div className="absolute bg-background-200/50 bottom-0 left-0 px-4 w-full flex items-center justify-center rounded-lg font-bold sm:text-xl text-xs backdrop-blur">

@@ -17,7 +17,7 @@ export const DEFAULT_ANIMALS: Animal[] = [
     gifAvatarUrl: Animal1,
     name: "Whiskerwisp",
     description:
-      "A soft, pastel-colored cat with swirling patterns of blue, pink, and lavender. Whiskerwisp's fur seems to shift slightly like mist, and their movements are almost too quiet to notice.",
+      "Whiskerwisp, the ethereal feline, is a creature of pure enchantment. Its fur is a mesmerizing tapestry of pastel hues—soft blues, pinks, and lavenders—that seem to dance and swirl like a living mist. This mystical cat moves with an elegance that defies the laws of nature, its steps so silent that it appears to glide through the air. Whiskerwisp's presence is like a gentle whisper in the wind, a fleeting glimpse of magic that leaves you breathless and yearning for more.",
     vote: 0,
   },
   {
@@ -26,7 +26,7 @@ export const DEFAULT_ANIMALS: Animal[] = [
     gifAvatarUrl: Animal2,
     name: "Flickerdoodle",
     description:
-      "A vibrant, orange-and-yellow striped cat with a coat that seems to flicker like a candle flame. They're always moving, darting around like a streak of sunlight.",
+      "Flickerdoodle is a vibrant spectacle of energy and light, a cat whose very essence seems to be woven from the sun's own rays. Its coat is a dazzling display of orange and yellow stripes, flickering and shimmering like a living flame. This fiery spirit is never still, darting and leaping with the speed and grace of a shooting star. Flickerdoodle's presence is a burst of warmth and vitality, a living embodiment of the sun's joyous dance across the sky.",
     vote: 0,
   },
   {
@@ -35,7 +35,7 @@ export const DEFAULT_ANIMALS: Animal[] = [
     gifAvatarUrl: Animal3,
     name: "MystiPurr",
     description:
-      "A rich, deep purple cat with flecks of silver and green like a midnight sky filled with shooting stars. Their eyes glow a soft, mysterious blue.",
+      "MystiPurr is a guardian of the cosmos, a cat whose deep purple fur is speckled with silver and green, reminiscent of a midnight sky filled with celestial wonders. Its eyes glow with a mysterious blue light, holding the secrets of the universe within their depths. MystiPurr moves with a serene grace, as if it is in tune with the very rhythm of the stars. This enigmatic feline is a keeper of dreams and mysteries, a silent companion on the journey through the infinite night.",
     vote: 0,
   },
   {
@@ -44,7 +44,7 @@ export const DEFAULT_ANIMALS: Animal[] = [
     gifAvatarUrl: Animal4,
     name: "DandyPounce",
     description:
-      "A small, round, and fluffy cat with bright bursts of color—reds, yellows, and greens—like a bouquet of flowers. Their energy is boundless, and they seem to hop more than walk.",
+      "DandyPounce is a delightful explosion of color and joy, a small, round, and fluffy cat that embodies the spirit of spring. Its fur is a vibrant bouquet of reds, yellows, and greens, each hue as bright and lively as a field of wildflowers. With boundless energy, DandyPounce hops and bounces with a playful exuberance that is utterly infectious. This cheerful creature is a living celebration of life, a reminder of the beauty and wonder that surrounds us every day.",
     vote: 0,
   },
   {
@@ -53,7 +53,7 @@ export const DEFAULT_ANIMALS: Animal[] = [
     gifAvatarUrl: Animal5,
     name: "Puzzlebounce",
     description:
-      "A patchwork of colors—green, orange, blue, and pink—with each patch seemingly sewn together like a quilt. Puzzlebounce has mismatched eyes and an air of curiosity about everything.",
+      "Puzzlebounce is a whimsical tapestry of colors and curiosity, a cat whose patchwork fur is a kaleidoscope of green, orange, blue, and pink. Each patch is like a piece of a grand puzzle, sewn together with the threads of imagination and wonder. With mismatched eyes that twinkle with mischief, Puzzlebounce explores the world with an insatiable curiosity, uncovering the hidden magic in every corner. This enchanting feline is a playful wanderer, a guide to the endless adventures that await those who dare to dream.",
     vote: 0,
   },
 ];
