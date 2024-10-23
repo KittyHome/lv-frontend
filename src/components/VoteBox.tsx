@@ -1,117 +1,106 @@
 import clsx from "clsx";
-import { motion, PanInfo } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { motion, useMotionValue } from "framer-motion";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 import Button from "../common/Button";
 import { useAppContext } from "../hooks/useAppContext";
 import { useAuth } from "../hooks/useAuth";
+import useCountdown from "../hooks/useCountdown";
 import { voteTo } from "../lib/supabase/utils";
 
-const MIN = -100;
 const MAX = 100;
 
 const VoteBox = () => {
   const { user } = useAuth();
   const { selectedAnimal, openAuthModal } = useAppContext();
-  const divRef = useRef<HTMLDivElement | null>(null);
+  const { countdown, isDisabled } = useCountdown(user?.voteDisabledDate);
+  const xPosition = useMotionValue(0);
   const [divWidth, setDivWidth] = useState(0);
   const [currentValue, setCurrentValue] = useState(0);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-  const [countdown, setCountdown] = useState("");
+  const divRef = useRef<HTMLDivElement | null>(null);
+  const cursorDivRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const updateButtonStatus = () => {
-      const now = new Date();
-      const voteDisabledUntil = new Date(user?.voteDisabledDate || 0);
-      const secondsLeft = (voteDisabledUntil.getTime() - now.getTime()) / 1000;
-
-      if (secondsLeft > 0) {
-        setIsButtonDisabled(true);
-        setCountdown(`${Math.ceil(secondsLeft)} seconds`);
-      } else {
-        setIsButtonDisabled(false);
-        setCountdown("");
-      }
-    };
-
-    updateButtonStatus();
-
-    const intervalId = setInterval(updateButtonStatus, 1000);
-
-    return () => clearInterval(intervalId);
-  }, [user?.voteDisabledDate]);
-
-  useEffect(() => {
-    const updateDivWidth = () => {
-      if (divRef.current) {
-        setDivWidth(divRef.current.clientWidth - 50);
-      }
-    };
-
-    updateDivWidth();
-
+    const updateDivWidth = () =>
+      setDivWidth(
+        divRef.current?.clientWidth ? divRef.current.clientWidth - 50 : 0
+      );
     window.addEventListener("resize", updateDivWidth);
-
+    updateDivWidth();
     return () => window.removeEventListener("resize", updateDivWidth);
   }, []);
 
-  const updateCurrentValue = (
-    _event: MouseEvent | TouchEvent | PointerEvent,
-    info: PanInfo
-  ) => {
-    const parentDivLeftEdge = divRef.current?.getBoundingClientRect().left || 0;
-    const relativeX = info.point.x - parentDivLeftEdge;
-    const progress = Math.max(0, Math.min(relativeX / divWidth, 1));
-    const value = MIN + progress * (MAX - MIN);
-    setCurrentValue(Math.round(value));
-  };
+  const updateCurrentValue = useCallback(
+    (_event: MouseEvent | TouchEvent | PointerEvent) => {
+      if (!divRef.current || !cursorDivRef.current) return;
+      const parentDivRect = divRef.current.getBoundingClientRect();
+      const cursorDivRect = cursorDivRef.current.getBoundingClientRect();
+      const progress =
+        (cursorDivRect.left +
+          cursorDivRect.width / 2 -
+          (parentDivRect.left + parentDivRect.width / 2)) /
+        (parentDivRect.width / 2 - cursorDivRect.width / 2);
+      setCurrentValue(Math.round(progress * MAX));
+    },
+    []
+  );
+
+  const cursorDivX = useMemo(() => {
+    if (!divRef.current || !cursorDivRef.current) return 0;
+    const parentDivRect = divRef.current.getBoundingClientRect();
+    const cursorDivWidth = cursorDivRef.current.getBoundingClientRect().width;
+    const center = parentDivRect.width / 2 + parentDivRect.left;
+    return (
+      (currentValue / MAX) * (parentDivRect.width / 2 - cursorDivWidth / 2) +
+      center -
+      cursorDivWidth / 2 -
+      parentDivRect.left
+    );
+  }, [currentValue, divWidth]);
+
+  useEffect(() => {
+    xPosition.set(cursorDivX);
+  }, [cursorDivX, xPosition]);
 
   const handleClick = useCallback(() => {
-    if (user) {
-      if (selectedAnimal?.name && currentValue !== 0 && !isButtonDisabled) {
-        voteTo(selectedAnimal.name, currentValue)
-          .then(() => {
-            const direction = currentValue > 0 ? "up" : "down";
-            toast.success(
-              `Vote successfully recorded for ${
-                selectedAnimal.name
-              }. Amount: ${Math.abs(currentValue)} (${direction}).`
-            );
-          })
-          .catch((error) =>
-            toast.error(`Failed to cast vote: ${error.message}`)
-          );
-      }
-    } else {
+    if (!user) {
       toast.info("Please log in to purchase a ticket.");
       openAuthModal();
+      return;
     }
-  }, [
-    user,
-    selectedAnimal?.name,
-    isButtonDisabled,
-    currentValue,
-    openAuthModal,
-  ]);
+    if (selectedAnimal?.name && currentValue !== 0 && !isDisabled) {
+      voteTo(selectedAnimal.name, currentValue)
+        .then(() => {
+          const direction = currentValue > 0 ? "up" : "down";
+          toast.success(
+            `Vote successfully recorded for ${
+              selectedAnimal.name
+            }. Amount: ${Math.abs(currentValue)} (${direction}).`
+          );
+        })
+        .catch((error) => toast.error(`Failed to cast vote: ${error.message}`));
+    }
+  }, [user, selectedAnimal?.name, currentValue, isDisabled, openAuthModal]);
 
   return (
     <div>
       <p className="text-xs italic opacity-50">
         Please select an animal first, then drag to cast your vote.
       </p>
-      <div className="relative w-full">
-        <div
-          className="w-full h-[5px] bg-gradient-to-r from-red-500 to-green-500"
-          ref={divRef}
-        ></div>
+      <div className="relative w-full" ref={divRef}>
+        <div className="w-full h-[5px] bg-gradient-to-r from-red-500 to-green-500"></div>
         <motion.div
+          ref={cursorDivRef}
           className="w-[50px] flex-col flex items-center justify-center"
-          drag
           dragConstraints={{ top: 0, bottom: 0, left: 0, right: divWidth }}
           dragElastic={false}
           dragMomentum={false}
+          style={{
+            x: xPosition,
+          }}
           onDrag={updateCurrentValue}
+          drag
         >
           <div
             className={clsx(
@@ -137,16 +126,16 @@ const VoteBox = () => {
             variant="ghost"
             className={clsx(
               "w-full",
-              isButtonDisabled
+              isDisabled
                 ? "cursor-not-allowed opacity-50 bg-gray-500"
                 : currentValue > 0
                 ? "!bg-green-500 hover:!bg-green-400"
                 : "!bg-red-500 hover:!bg-red-400"
             )}
             onClick={handleClick}
-            disabled={isButtonDisabled}
+            disabled={isDisabled}
           >
-            {isButtonDisabled ? (
+            {isDisabled ? (
               `Available in ${countdown}`
             ) : (
               <>

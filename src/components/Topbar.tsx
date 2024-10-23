@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useCallback } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
 import { GiHamburgerMenu, GiTargetPrize } from "react-icons/gi";
+import { GrTransaction } from "react-icons/gr";
 import { HiHome, HiTicket } from "react-icons/hi2";
 import { IoSettings } from "react-icons/io5";
 import { MdNotifications, MdOutlineSupportAgent } from "react-icons/md";
@@ -11,13 +12,12 @@ import Button from "../common/Button";
 import PopupPanel from "../common/PopupPanel";
 import { useAppContext } from "../hooks/useAppContext";
 import { useAuth } from "../hooks/useAuth";
+import { signOut } from "../lib/supabase/auth";
+import ActiveTicketBox from "./ActiveTicketBox";
 import BPopup from "./BPopup";
 import Inbox from "./Inbox";
 import MiniLogo from "/favicon.png";
 import Logo from "/logo.png";
-import ActiveTicketBox from "./ActiveTicketBox";
-import { signOut } from "../lib/supabase/auth";
-import { GrTransaction } from "react-icons/gr";
 
 const MenuButton = ({
   className,
