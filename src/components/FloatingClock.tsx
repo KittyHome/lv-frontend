@@ -90,7 +90,7 @@ const FloatingClock = () => {
 
   useEffect(() => {
     load(DEFAULT_AUDIOS[audioPlayIndex], {
-      autoplay: true,
+      autoplay: false,
       onend: () =>
         setAudioPlayIndex((audioPlayIndex + 1) % DEFAULT_AUDIOS.length),
     });
