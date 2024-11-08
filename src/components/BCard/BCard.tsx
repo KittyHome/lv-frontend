@@ -1,119 +1,53 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import clsx from "clsx";
 
-import VoteButton from "./VoteButton";
-import BarChart from "./BarChart";
-import NumberPad from "./NumberPad";
-
-const generateRandomData = () => {
-  return Array.from({ length: 48 }, (_, index) => {
-    const hour = Math.floor(index / 2);
-    const minute = index % 2 === 0 ? "00" : "30";
-    const nextHour = index % 2 === 0 ? hour : (hour + 1) % 24;
-    const nextMinute = minute === "00" ? "30" : "00";
-    const label = `${String(hour).padStart(2, "0")}:${minute}-${String(
-      nextHour
-    ).padStart(2, "0")}:${nextMinute}`;
-    return {
-      label,
-      data: [
-        {
-          primary: `${String(hour).padStart(2, "0")}:${
-            index % 2 === 0 ? "15" : "45"
-          }`,
-          secondary: Math.floor(Math.random() * 250),
-        },
-      ],
-    };
-  });
-};
+import { AnimalId } from "../../lib/types";
 
 interface BCardProps {
   imgSrc: string;
-  title: string;
-  description: string;
+  title: AnimalId;
+  vote: number;
+  onClick: () => void;
+  isSelected: boolean;
 }
 
-const BCard: React.FC<BCardProps> = ({ imgSrc, title, description }) => {
-  const chartData = useMemo(() => generateRandomData(), []);
-  const divRef = useRef<HTMLDivElement>(null);
-  const [divHeight, setDivHeight] = useState(300);
-  const [isBelowXL, setIsBelowXL] = useState(false);
-  const [isUp, setIsUp] = useState(true);
-
-  useEffect(() => {
-    const div = divRef.current;
-    if (div) {
-      const resizeObserver = new ResizeObserver((entries) => {
-        for (let entry of entries) {
-          setDivHeight(entry.contentRect.height);
-        }
-      });
-      resizeObserver.observe(div);
-      return () => resizeObserver.unobserve(div);
-    }
-  }, []);
-
-  const updateScreenSize = () => {
-    setIsBelowXL(window.innerWidth < 1280);
-  };
-
-  useEffect(() => {
-    window.addEventListener("resize", updateScreenSize);
-    updateScreenSize();
-    return () => window.removeEventListener("resize", updateScreenSize);
-  }, []);
-
-  const dynamicStyle = useMemo(
-    () => ({
-      height: isBelowXL ? `${divHeight}px` : "auto",
-    }),
-    [divHeight, isBelowXL]
-  );
-
-  const changeMode = useCallback(
-    (mode: boolean) => () => {
-      setIsUp(mode);
-    },
-    []
-  );
-
+const BCard: React.FC<BCardProps> = ({
+  imgSrc,
+  title,
+  vote,
+  onClick,
+  isSelected,
+}) => {
   return (
-    <div className="bg-secondary-100/80 p-2 rounded flex md:flex-row xl:flex-col gap-2 overflow-clip h-full w-full justify-center items-center border border-background-100 shadow-lg">
-      <div ref={divRef} className="flex flex-col gap-2 w-full h-[fit-content]">
-        <div className="relative">
-          <video
-            src={imgSrc}
-            className="rounded pointer-events-none"
-            autoPlay
-            loop
-            muted
-          />
-          {/* <img src={imgSrc} className="rounded" /> */}
-          <div className="absolute bg-background-200 top-2 left-2 px-4 h-[25px] w-[fit-content] flex items-center justify-center rounded-full opacity-80">
-            7283627
-          </div>
-        </div>
-        <div className="p-2 flex justify-between items-center rounded">
-          <VoteButton active={isUp} onClick={changeMode(true)} />
-          <NumberPad isUp={isUp} name={title} />
-          <VoteButton
-            active={!isUp}
-            direction="down"
-            textPosition="right"
-            onClick={changeMode(false)}
-          />
-        </div>
-        <div className="p-2 bg-background-200 flex justify-between items-center rounded">
-          <BarChart data={chartData} />
-        </div>
-      </div>
+    <div
+      className="bg-secondary-100/80 justify-center items-center rounded-lg flex lg:flex-row xl:flex-col gap-2 overflow-clip h-full w-full border border-background-100 shadow-lg p-1"
+      onClick={onClick}
+    >
       <div
-        className="flex-1 flex gap-2 flex-col overflow-clip"
-        style={dynamicStyle}
+        className={clsx(
+          "flex lg:flex-col flex-row gap-3 w-[fit-content] cursor-pointer",
+          isSelected ? "border-primary-100 rounded-lg xl:border-4 border-2" : ""
+        )}
       >
-        <div className="flex flex-col overflow-y-auto h-full min-w-[200px] md:px-3 md:py-1 xl:p-1 px-3">
-          <div className="text-xl font-bold">{title}</div>
-          <div className="text-sm">{description}</div>
+        <div className="flex items-center">
+          <div className="relative xl:max-w-full lg:max-w-[230px] lg:max-h-[180px] xl:max-h-full lg:aspect-auto xl:aspect-square overflow-clip flex items-center rounded-lg">
+            <img src={imgSrc} className="rounded-lg" />
+            <motion.div
+              className={`absolute left-0 top-0 w-full h-full backdrop-blur rounded-lg flex gap-2 flex-col overflow-clip xl:p-2 p-0.5`}
+              initial={{ opacity: 0 }}
+              whileHover={{ opacity: 1 }}
+              whileTap={{ opacity: 1 }}
+            >
+              <div className="flex items-center justify-center h-full w-full md:px-3 md:py-1 xl:p-1 px-1">
+                <p className="lg:text-xl text-[12px] font-bold break-all w-full text-center">
+                  {title}
+                </p>
+              </div>
+            </motion.div>
+            <div className="absolute bg-background-200/50 bottom-0 left-0 px-4 w-full flex items-center justify-center rounded-lg font-bold sm:text-xl text-xs backdrop-blur">
+              {vote}
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
 import clsx from "clsx";
+import { motion, useInView } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 interface AnimatedNumberProps {
   target: number;
@@ -43,8 +43,8 @@ const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
   return (
     <div
       ref={ref}
-      className="flex items-center flex-col mb-5"
-      data-tooltip-id="animated-number-tooltip"
+      className="flex items-center flex-col"
+      data-tooltip-id="global-tooltip"
       data-tooltip-content={tooltip}
     >
       <motion.div
@@ -56,8 +56,8 @@ const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
           transition: { duration: 0.2, yoyo: Infinity },
         }}
         className={clsx(
-          "bg-gradient-to-r from-primary-100 via-primary-200 to-primary-300 text-transparent bg-clip-text select-none",
-          size === "sm" ? "text-xl" : size === "lg" ? "text-6xl" : "text-2xl",
+          "select-none",
+          size === "sm" ? "text-md" : size === "lg" ? "text-7xl" : "text-2xl",
           className
         )}
       >

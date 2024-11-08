@@ -12,7 +12,7 @@ const ThemeToggle = () => {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 bg-primary-200 text-background-100 rounded"
+      className="p-2 bg-primary-200 text-background-100 rounded-lg"
     >
       Toggle Theme
     </button>

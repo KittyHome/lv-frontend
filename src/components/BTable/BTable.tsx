@@ -20,10 +20,16 @@ interface BTableProps {
 
 function BTable({ columns, rows }: BTableProps) {
   return (
-    <div className="flex flex-col overflow-clip">
+    <div className="flex flex-col overflow-clip bg-background-200 p-3 min-w-[1000px] rounded-b-lg">
       <TableHead columns={columns} />
-      <div className="mt-[100px]">
-        <TableBody columns={columns} rows={rows} />
+      <div>
+        {rows.length > 0 ? (
+          <TableBody columns={columns} rows={rows} />
+        ) : (
+          <div className="p-5 pb-2 w-full flex justify-center items-center">
+            No data available
+          </div>
+        )}
       </div>
     </div>
   );

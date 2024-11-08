@@ -54,6 +54,14 @@ body {
   font-style: normal;
 }
 
+.nabla-regular {
+  font-family: "Nabla", cursive;
+}
+
+.acme-regular {
+  font-family: "Acme", cursive;
+}
+
 .recharts-default-tooltip {
   @apply backdrop-blur;
 }
