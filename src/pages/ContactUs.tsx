@@ -9,14 +9,6 @@ const ContactUs = () => {
 
   return (
     <PageWrapper title="Get in touch with us for any inquiries or support">
-      <div className="gap-3 bg-background-200 p-3 w-full rounded-lg flex flex-col mt-3">
-        Join our Community
-        <Button
-          onClick={() => window.open("https://discord.gg/3XSGag74Aq", "_blank")}
-        >
-          Join our Discord
-        </Button>
-      </div>
       <div className="bg-background-200 p-3 rounded-lg w-full flex lg:flex-row flex-col gap-5 mt-5">
         <div className="flex flex-col gap-3">
           <div>
@@ -25,7 +17,7 @@ const ContactUs = () => {
           </div>
           <div>
             <p className="text-lg font-bold">Email</p>
-            <p>info@kittyhome.org</p>
+            <p>contact@luckyvillage.org</p>
           </div>
         </div>
 

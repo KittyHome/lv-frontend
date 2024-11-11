@@ -6,7 +6,7 @@ const Footer: React.FC = () => {
       <div className="container mx-auto flex justify-center items-center">
         <div>
           <p>
-            &copy; {new Date().getFullYear()} KittyHome. All rights reserved.
+            &copy; {new Date().getFullYear()} LuckyVillage. All rights reserved.
           </p>
         </div>
       </div>
