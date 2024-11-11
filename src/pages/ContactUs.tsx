@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import Button from "../common/Button";
 import PageWrapper from "../components/PageWrapper";
 
 const ContactUs = () => {
